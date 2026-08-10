@@ -12,3 +12,30 @@ dependencies = [
 dev = [
     "ruff>=0.16.1",
 ]
+
+[tool.ruff]
+# 1行の最大文字数
+line-length = 88
+
+# 有効にするルールのグループ
+lint.select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # Pyflakes
+    "I",  # isort (import順序の自動整列)
+    "D",  # pydocstyle docstring
+    "N",  # pep8-naming
+]
+
+# 無視するルールがあれば指定
+lint.ignore = [
+    "D203", # D211と競合するため無効化
+    "D213", # D212と競合するため無効化
+    "D400", # 日本語文末のピリオド強制を解除
+    "D415", # 日本語文末の記号強制を解除
+    "D100", # 公開モジュールへの docstring 強制を解除
+    "D103", # 公開関数への docstring 強制を解除
+]
+
+[lint.pydocstyle]
+convention="google"
