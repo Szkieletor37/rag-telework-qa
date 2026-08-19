@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 import pymupdf4llm
 from dotenv import load_dotenv
@@ -10,20 +9,29 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GEMINI_API_KEY_FREE = os.getenv('GEMINI_API_KEY_FREE')
 
-def convert_pdf_to_md(pdf_file_name: Path, md_file_path: Path) -> None:
+def convert_pdf_to_md(pdf_file_name) -> None:
     """PDF を markdown に変換する関数"""
-    md = pymupdf4llm.to_markdown(pdf_file_name)
-    with open(md_file_path, "w", encoding="utf-8") as file:
-        file.write(md)
+    md_file_name = os.path.splitext(os.path.basename(pdf_file_name))[0] + ".md"
+    pdf_file_path = "data/raw_pdf/" + pdf_file_name
+    raw_md_file_path = "data/raw_md/" + f"raw_{md_file_name}"
+    cleaned_md_file_path = "data/cleaned_md/" + f"cleaned_{md_file_name}"
 
-    format_md(md)
+    if not os.path.exists(raw_md_file_path):
+        raw_md = pymupdf4llm.to_markdown(pdf_file_path)
+        with open(raw_md_file_path) as file:
+            file.write(raw_md)
+
+    if not os.path.exists(cleaned_md_file_path):
+        cleaned_md = clean_markdown(raw_md)
+
+        with open(cleaned_md_file_path,
+                "w", encoding="utf-8") as file:
+            file.write(cleaned_md)
+
 
 def clean_markdown(md_content):
     """変換した markdown を LLM で整形する関数"""
-    load_dotenv()
-
     client = genai.Client(api_key=GEMINI_API_KEY_FREE)
-
 
     prompt = f"""
 このmarkdownを整形して: {md_content}
@@ -39,7 +47,5 @@ def clean_markdown(md_content):
     print(interaction.output_text)
 
 if __name__ == "__main__":
-    convert_pdf_to_md("data/raw/telework_guide.pdf",
-                      "data/md/telework_guide.md")
-
+    convert_pdf_to_md("telework_guide.pdf")
 
