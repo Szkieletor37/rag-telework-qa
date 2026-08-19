@@ -16,9 +16,9 @@ def convert_pdf_to_md(pdf_file_name: Path, md_file_path: Path) -> None:
     with open(md_file_path, "w", encoding="utf-8") as file:
         file.write(md)
 
-    correct_md(md)
+    format_md(md)
 
-def correct_md(md):
+def format_md(md):
     """変換した markdown を LLM で整形する関数"""
     load_dotenv()
 
