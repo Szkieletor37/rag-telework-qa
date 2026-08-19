@@ -18,7 +18,7 @@ def convert_pdf_to_md(pdf_file_name: Path, md_file_path: Path) -> None:
 
     format_md(md)
 
-def format_md(md):
+def clean_markdown(md_content):
     """変換した markdown を LLM で整形する関数"""
     load_dotenv()
 
@@ -26,7 +26,7 @@ def format_md(md):
 
 
     prompt = f"""
-        このmarkdownを整形して: {md}
+このmarkdownを整形して: {md_content}
     """
 
     model = "gemini-3.6-flash"
