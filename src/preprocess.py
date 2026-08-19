@@ -5,7 +5,10 @@ import pymupdf4llm
 from dotenv import load_dotenv
 from google import genai
 
+load_dotenv()
+
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+GEMINI_API_KEY_FREE = os.getenv('GEMINI_API_KEY_FREE')
 
 def convert_pdf_to_md(pdf_file_name: Path, md_file_path: Path) -> None:
     """PDF を markdown に変換する関数"""
@@ -19,7 +22,7 @@ def correct_md(md):
     """変換した markdown を LLM で整形する関数"""
     load_dotenv()
 
-    client = genai.Client(api_key=GEMINI_API_KEY)
+    client = genai.Client(api_key=GEMINI_API_KEY_FREE)
 
 
     prompt = f"""
