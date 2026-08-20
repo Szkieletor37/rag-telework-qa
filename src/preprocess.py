@@ -1,10 +1,15 @@
 import os
+from logging import DEBUG, getLogger
+from pathlib import Path
 
 import pymupdf4llm
 from dotenv import load_dotenv
 from google import genai
 
 load_dotenv()
+
+logger = getLogger(__name__)
+logger.setLevel(DEBUG)
 
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GEMINI_API_KEY_FREE = os.getenv('GEMINI_API_KEY_FREE')
