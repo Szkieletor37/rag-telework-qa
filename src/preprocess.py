@@ -30,7 +30,7 @@ def convert_pdf_to_md(raw_file_path: Path, interim_file_path: Path,
         interim_file_path.write_text(interim_md, encoding="utf-8")
         logger.info(f"変換後の.mdファイルを保存しました。: {interim_file_path}")
     else:
-        logger.info(f"既存のinterim .mdファイルを利用します: {interim_file_path}")
+        logger.info(f"既存のinterim.mdファイルを利用します: {interim_file_path}")
         interim_md = interim_file_path.read_text(encoding="utf-8")
 
 
@@ -70,7 +70,4 @@ def clean_markdown(md_content):
     logger.info(f"使用したtoken数: {interaction.usage}")
 
     return interaction.output_text
-
-if __name__ == "__main__":
-    convert_pdf_to_md(Path("data/raw_pdf/telework_guide.pdf"), Path("data/raw_md/telework_guide.md"), Path("data/cleaned_md/telework_guide.md"))
-
+    """
