@@ -53,11 +53,21 @@ def clean_markdown(md_content):
     """
 
     model = "gemini-3.6-flash"
+    
+    # token数のカウント
+    total_tokens = client.models.count_tokens(
+        model=model,
+        contents=prompt
+    )
+    logger.info(f"total入力tokens: {total_tokens.total_tokens}")
 
+
+"""
     interaction = client.interactions.create(
         model=model,
         input=prompt,
     )
+    logger.info(f"使用したtoken数: {interaction.usage}")
 
     return interaction.output_text
 
