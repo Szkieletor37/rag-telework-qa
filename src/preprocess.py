@@ -14,24 +14,34 @@ logger.setLevel(DEBUG)
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GEMINI_API_KEY_FREE = os.getenv('GEMINI_API_KEY_FREE')
 
-def convert_pdf_to_md(pdf_file_name) -> None:
-    """PDF を markdown に変換する関数"""
-    md_file_name = os.path.splitext(os.path.basename(pdf_file_name))[0] + ".md"
-    pdf_file_path = "data/raw_pdf/" + pdf_file_name
-    raw_md_file_path = "data/raw_md/" + f"raw_{md_file_name}"
-    cleaned_md_file_path = "data/cleaned_md/" + f"cleaned_{md_file_name}"
+def convert_pdf_to_md(raw_file_path: Path, interim_file_path: Path,
+                      processed_file_path: Path) -> None:
+    """PDF を markdown に変換し、整形する関数"""
+    #md_file_name = os.path.splitext(os.path.basename(pdf_file_name))[0] + ".md"
+    #pdf_file_path = "data/raw_pdf/" + pdf_file_name
 
-    if not os.path.exists(raw_md_file_path):
-        raw_md = pymupdf4llm.to_markdown(pdf_file_path)
-        with open(raw_md_file_path) as file:
-            file.write(raw_md)
+    if not raw_file_path.exists():
+        logger.error(f"変換元ファイルがないよ: {raw_file_path}")
+        return
 
-    if not os.path.exists(cleaned_md_file_path):
-        cleaned_md = clean_markdown(raw_md)
+    if not interim_file_path.exists():
+        logger.info(f"PDFからMarkdownへの変換を開始します: {raw_file_path}")
+        interim_md = pymupdf4llm.to_markdown(raw_file_path)
+        interim_file_path.write_text(interim_md, encoding="utf-8")
+        logger.info(f"変換後の.mdファイルを保存しました。: {interim_file_path}")
+    else:
+        logger.info(f"既存のinterim .mdファイルを利用します: {interim_file_path}")
+        interim_md = interim_file_path.read_text(encoding="utf-8")
 
-        with open(cleaned_md_file_path,
-                "w", encoding="utf-8") as file:
-            file.write(cleaned_md)
+
+    logger.info("MarkdownをGeminiで整形します...")
+    if processed_file_path.exists():
+        logger.info("整形後の.mdファイルは既に存在するため、上書きされます...")
+
+    processed_md = clean_markdown(interim_md)
+    processed_file_path.write_text(processed_md, encoding="utf-8")
+    
+    logger.info(f"整形後の.mdファイルを作成しました: {processed_file_path}")
 
 
 def clean_markdown(md_content):
@@ -49,8 +59,8 @@ def clean_markdown(md_content):
         input=prompt,
     )
 
-    print(interaction.output_text)
+    return interaction.output_text
 
 if __name__ == "__main__":
-    convert_pdf_to_md("telework_guide.pdf")
+    convert_pdf_to_md(Path("data/raw_pdf/telework_guide.pdf"))
 
