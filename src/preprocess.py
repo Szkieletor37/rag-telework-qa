@@ -62,5 +62,5 @@ def clean_markdown(md_content):
     return interaction.output_text
 
 if __name__ == "__main__":
-    convert_pdf_to_md(Path("data/raw_pdf/telework_guide.pdf"))
+    convert_pdf_to_md(Path("data/raw_pdf/telework_guide.pdf"), Path("data/raw_md/telework_guide.md"), Path("data/cleaned_md/telework_guide.md"))
 
