@@ -1,0 +1,7 @@
+- question_id: 1
+  category: "Multi-Hop"
+  question: "テレワーク導入時の費用補助条件と、申請手続きの期限はそれぞれどうなっていますか？"
+  ground_truth: "費用補助の条件は〜〜であり、申請期限は提出から◯か月以内です。"
+  ideal_chunks:
+    - chunk_text: "費用は、ねこを飼っていると補助できます。"
+    - chunk_text: "申請期限は、提出から3ヶ月以内だにゃ"

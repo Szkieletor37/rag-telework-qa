@@ -1,0 +1,28 @@
+{
+  "experiment_id": "exp_001",
+  "created_at": "2026-08-24T15:30:00",
+  "config": {
+    "chunk_size": 500,
+    "chunk_overlap": 50,
+    "embedding_model": "text-embedding-3-small",
+    "llm_model": "gemini-1.5-flash",
+    "top_k": 5
+  },
+  "results": [
+    {
+      "question_id": 1,
+      "category": "Multi-Hop",
+      "question": "テレワーク導入時の費用補助条件と...",
+      "ground_truth": "費用補助の条件は〜〜",
+      "retrieved_chunks": [
+        {
+          "rank": 1,
+          "score": 0.85,
+          "chunk_id": "doc_01_c003",
+          "chunk_text": "費用は、ねこを飼っていると..."
+        }
+      ],
+      "generated_answer": "LLMが出力した回答文章..."
+    }
+  ]
+}
