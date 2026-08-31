@@ -5,6 +5,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+load_dotenv()
+
 # プロジェクトルートの定義
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -21,7 +23,6 @@ GEMINI_API_KEY_FREE = os.getenv('GEMINI_API_KEY_FREE')
 
 def setup_environment() -> None:
     """環境変数の設定とルートロガーの設定を行う関数"""
-    load_dotenv()
 
     # ロガーの設定
     FORMATTER = '[%(levelname)s %(asctime)s] - %(message)s'
