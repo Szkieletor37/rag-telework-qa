@@ -50,7 +50,7 @@ def generate_questions() -> None:
             model=model,
             contents=full_prompt
         )
-        logger.info(f"\ttotal入力tokens: {total_tokens.total_tokens}")
+        logger.info(f"  total入力tokens: {total_tokens.total_tokens}")
 
         # 質問生成
 
@@ -58,11 +58,13 @@ def generate_questions() -> None:
             model=model,
             input=full_prompt,
         )
-        logger.info(f"\t使用したtoken数: {interaction.usage}")
+        logger.info(f"  質問生成に成功しました。")
+        logger.info(f"  使用したtoken数: {interaction.usage}")
 
         # カテゴリごとにyamlファイルに保存
         output_file = QUESTION_DIR / f"{category}.yaml"
         output_file.write_text(interaction.output_text, encoding="utf-8")
+        logger.info(f"  生成した質問を, {output_file} に保存しました。")
 
 
 if __name__ == "__main__":
