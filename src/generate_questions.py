@@ -14,7 +14,7 @@ logger.setLevel(DEBUG)
 def generate_questions() -> None:
     """カテゴリごとに質問を生成する関数（カテゴリあたりの生成数はbaseプロンプト内に記載）"""
 
-    categories = ["conditional", "entity", "enumerate", "multi_hop", "unanswerable", "wording_variant"]
+    categories = ["enumerate", "conditional", "entity", "multi_hop", "unanswerable", "wording_variant"]
 
     model = "gemini-3.6-flash"
 
