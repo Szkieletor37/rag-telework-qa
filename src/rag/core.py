@@ -42,7 +42,7 @@ def rag_core_pipeline(win_host: Any, query: str)->Any:
     chroma_collection = init_chroma_collection(db_path=DB_DIR)
 
     # インデックスの作成
-    generate_index(chroma_collection, md_path=CLEANED_MD_PATH)
+    generate_index(chroma_collection, win_host, md_path=CLEANED_MD_PATH)
 
     # 質問クエリを埋め込みベクトル化
     query_embedded = get_embeddings(query, win_host)
