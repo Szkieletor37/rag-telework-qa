@@ -2,6 +2,7 @@
 RAGの主要な処理（生成、検索、保存）を行うモジュール
 """
 
+from pathlib import Path
 from typing import Any
 
 from vector_store import generate_index, get_embeddings, init_collection
@@ -26,7 +27,20 @@ def save_experiment_result(result: Any):
     pass
 
 
-def rag_pipeline(query: str)->Any:
+def rag_core_pipeline(query: str)->Any:
+    """
+    """
+
+    # TODO: 
+    #   * DB_DIR はどのファイルで宣言すべき？
+    #   * DB_DIR は rag_core_pipeline()は引数として受け取るべき？
+
+    # chroma_collection の初期化
+    chroma_collection = init_chroma_collection(db_path=DB_DIR)
+
+    # インデックスの作成
+    generate_index(chroma_collection, md_path=CLEANED_MD_PATH)
+
     # 質問クエリを埋め込みベクトル化
     query_embedded = get_embeddings(query)
 

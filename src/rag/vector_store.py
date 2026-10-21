@@ -18,5 +18,12 @@ def get_embeddings(text: str):
 def init_collection(db_path: Path):
     """ chroma_clientを初期化して、collectionを作成する関数"""
 
-    # TODO: return chroma_client.get_or_create_collection()
-    pass
+    # chroma_client の初期化
+    chroma_client = chromadb.PersistentClient(db_path)
+
+    # collection の作成
+    chroma_collection = chroma_client.get_or_create_collection(
+        name="local_md"
+    )
+
+    return chroma_collection
