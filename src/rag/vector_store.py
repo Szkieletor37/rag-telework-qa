@@ -3,11 +3,46 @@ RAGの検索のためのベクトル化、インデックス作成等をまと�
 """
 
 from pathlib import Path
+from typing import Any
 
-def generate_index(cleaned_md: str):
+import chromadb
+
+def split_text(md: str):
+    """チャンキングを行う関数
+    """
+    chunk_size = 200
+    overlap = 50
+    chunks = []
+    start = 0
+    while start < len(md):
+        end = start + chunk_size
+        chunks.append(md[start:end])
+        start += chunk_size - overlap
+
+    return chunks
+
+def generate_index(chroma_collection: Any, md_path: Path):
     """検索対象の資料のvector indexを構築して、chroma_dbへ格納する関数"""
 
-    # TODO: chunking, vectorize, chroma_dbへの格納を実装
+    # markdown の読み込み
+    md = md_path.read_text(encoding="UTF-8")
+
+    # チャンクに分割
+    chunks = split_text(md)
+
+    # 各チャンクごとに処理
+    for i, chunk in enumerate(chunks):
+
+        # ベクタ化
+        embed = get_embeddings(chunk, win_host)
+
+        # collection に格納
+        chroma_collection.add(
+            documents=[chunk],
+            embeddings=[embed],
+            ids=[f"telework_guide_{i}"]
+        )
+    
     pass
 
 def get_embeddings(text: str):
@@ -15,7 +50,7 @@ def get_embeddings(text: str):
     # TODO: udemy3.py::ollama_embed()の内容を実装する
     pass
 
-def init_collection(db_path: Path):
+def init_chroma_collection(db_path: Path):
     """ chroma_clientを初期化して、collectionを作成する関数"""
 
     # chroma_client の初期化
