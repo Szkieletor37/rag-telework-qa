@@ -5,7 +5,10 @@ RAGの主要な処理（生成、検索、保存）を行うモジュール
 from pathlib import Path
 from typing import Any
 
-from vector_store import generate_index, get_embeddings, init_collection
+from vector_store import generate_index, get_embeddings, init_chroma_collection
+
+DB_DIR = Path("./chroma_db")
+CLEANED_MD_PATH = Path("./data/cleaned_md/telework_guide.md")
 
 def retrieve_chunks(query_embeddings: Any, top_k: int) -> Any:
     """ベクトル検索を行う関数"""
