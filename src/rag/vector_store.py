@@ -21,7 +21,7 @@ def split_text(md: str):
 
     return chunks
 
-def generate_index(chroma_collection: Any, md_path: Path):
+def generate_index(chroma_collection: Any, win_host: Any, md_path: Path):
     """検索対象の資料のvector indexを構築して、chroma_dbへ格納する関数"""
 
     # markdown の読み込み

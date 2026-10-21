@@ -30,7 +30,7 @@ def save_experiment_result(result: Any):
     pass
 
 
-def rag_core_pipeline(query: str)->Any:
+def rag_core_pipeline(win_host: Any, query: str)->Any:
     """
     """
 
@@ -45,7 +45,7 @@ def rag_core_pipeline(query: str)->Any:
     generate_index(chroma_collection, md_path=CLEANED_MD_PATH)
 
     # 質問クエリを埋め込みベクトル化
-    query_embedded = get_embeddings(query)
+    query_embedded = get_embeddings(query, win_host)
 
     # 検索
     retrieved_contexts = retrieve_chunks(query_embedded)

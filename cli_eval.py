@@ -3,6 +3,7 @@ cliからYAMLファイルを読み込み、質問を送付して回答を受け�
 """
 
 import argparse
+import subprocess
 
 from typing import Any
 from pathlib import Path
@@ -29,5 +30,8 @@ def cli_eval() -> Any:
     args = make_parser().parse_args(argv)
 
     queries = parse_yaml(args.yaml)
+
+    # 埋め込みベクトル作成用の Ollama 起動のための情報を取得
+    win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
     
-    evaluate_questions(queries)
+    evaluate_questions(win_host, queries)
