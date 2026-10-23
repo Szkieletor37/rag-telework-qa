@@ -9,6 +9,7 @@ from vector_store import generate_index, get_embeddings, init_chroma_collection
 
 DB_DIR = Path("./chroma_db")
 CLEANED_MD_PATH = Path("./data/cleaned_md/telework_guide.md")
+EMBEDDING_MODEL = "nomic-embed-text"
 
 def retrieve_chunks(query_embeddings: Any, top_k: int) -> Any:
     """ベクトル検索を行う関数"""
@@ -42,7 +43,7 @@ def rag_core_pipeline(win_host: Any, query: str)->Any:
     chroma_collection = init_chroma_collection(db_path=DB_DIR)
 
     # インデックスの作成
-    generate_index(chroma_collection, win_host, md_path=CLEANED_MD_PATH)
+    generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=CLEANED_MD_PATH)
 
     # 質問クエリを埋め込みベクトル化
     query_embedded = get_embeddings(query, win_host)

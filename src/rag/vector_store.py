@@ -2,10 +2,15 @@
 RAGの検索のためのベクトル化、インデックス作成等をまとめたモジュール。
 """
 
+from logging import DEBUG, getLogger
 from pathlib import Path
 from typing import Any
 
 import chromadb
+import requests
+
+logger = getLogger(__name__)
+logger.setLevel(DEBUG)
 
 def split_text(md: str):
     """チャンキングを行う関数
@@ -21,7 +26,21 @@ def split_text(md: str):
 
     return chunks
 
-def generate_index(chroma_collection: Any, win_host: Any, md_path: Path):
+def get_embeddings(text: str, model: Any, win_host: Any):
+    """短いテキストについての埋め込みベクトルを生成・取得する関数"""
+
+    r = requests.post(
+        f"http://{win_host}:12000/api/embeddings",
+        json={"model": model, "prompt": text}
+    )
+    data = r.json()
+
+    logger.debug(f"data = {data}")
+
+    return data["embedding"]
+
+
+def generate_index(chroma_collection: Any, embedding_model:Any, win_host: Any, md_path: Path):
     """検索対象の資料のvector indexを構築して、chroma_dbへ格納する関数"""
 
     # markdown の読み込み
@@ -33,8 +52,8 @@ def generate_index(chroma_collection: Any, win_host: Any, md_path: Path):
     # 各チャンクごとに処理
     for i, chunk in enumerate(chunks):
 
-        # ベクタ化
-        embed = get_embeddings(chunk, win_host)
+        # 埋め込みベクタ化
+        embed = get_embeddings(chunk, embedding_model, win_host)
 
         # collection に格納
         chroma_collection.add(
@@ -43,11 +62,6 @@ def generate_index(chroma_collection: Any, win_host: Any, md_path: Path):
             ids=[f"telework_guide_{i}"]
         )
     
-    pass
-
-def get_embeddings(text: str):
-    """埋め込みベクトルを生成・取得する関数"""
-    # TODO: udemy3.py::ollama_embed()の内容を実装する
     pass
 
 def init_chroma_collection(db_path: Path):
