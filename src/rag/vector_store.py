@@ -62,7 +62,7 @@ def generate_index(chroma_collection: Any, embedding_model:Any, win_host: Any, m
             ids=[f"telework_guide_{i}"]
         )
     
-    pass
+    return
 
 def init_chroma_collection(db_path: Path):
     """ chroma_clientを初期化して、collectionを作成する関数"""
