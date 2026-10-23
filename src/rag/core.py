@@ -11,12 +11,20 @@ DB_DIR = Path("./chroma_db")
 CLEANED_MD_PATH = Path("./data/cleaned_md/telework_guide.md")
 EMBEDDING_MODEL = "nomic-embed-text"
 
-def retrieve_chunks(query_embeddings: Any, top_k: int) -> Any:
+def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
     """ベクトル検索を行う関数"""
 
+    # TODO: [query_embeddings]<-これ正しいか？型エラー出そう
+    retrieved_contexts = collection.query(
+        query_embeddings=[query_embeddings],
+        n_results=top_k
+    )
     # TODO: collection.query()を用いて検索を行う？
     # TODO: 引数の型がわからん
-    pass
+    #   単一の埋め込みなのかリストなのか
+
+    # TODO: 返り値も単一なのかリストのリストなのかがわからん
+    return retrieved_contexts
 
 def generate_answer(model: Any, retrieved_contexts: Any, system_prompt: str, base_prompt: str)->Any:
     """modelに回答を生成させる関数"""
@@ -46,7 +54,7 @@ def rag_core_pipeline(win_host: Any, query: str)->Any:
     generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=CLEANED_MD_PATH)
 
     # 質問クエリを埋め込みベクトル化
-    query_embedded = get_embeddings(query, win_host)
+    query_embedded = get_embeddings(query, win_host,embedding_model=EMBEDDING_MODEL)
 
     # 検索
     retrieved_contexts = retrieve_chunks(query_embedded)
