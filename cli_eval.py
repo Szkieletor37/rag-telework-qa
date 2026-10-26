@@ -6,8 +6,17 @@ import argparse
 import subprocess
 import yaml
 
+from logging import getLogger, DEBUG
 from typing import Any
 from pathlib import Path
+
+from src.config import setup_environment
+from src.rag.core import rag_core_pipeline
+
+setup_environment()
+
+logger = getLogger(__name__)
+logger.setLevel(DEBUG)
 
 def make_parser() -> Any:
     """parserをargparseで作成する関数"""
