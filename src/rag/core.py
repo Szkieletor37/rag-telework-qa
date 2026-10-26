@@ -43,8 +43,8 @@ def save_experiment_result(result: Any):
     pass
 
 
-def rag_core_pipeline(win_host: Any, query: str)->Any:
-    """
+def rag_core_pipeline(query: Any, win_host: Any)->Any:
+    """RAGのコアの部分を処理する関数
     """
 
     # TODO: 
@@ -53,6 +53,9 @@ def rag_core_pipeline(win_host: Any, query: str)->Any:
 
     # chroma_collection の初期化
     chroma_collection = init_chroma_collection(db_path=DB_DIR)
+    logger.debug(chroma_collection)
+
+    return
 
     # インデックスの作成
     generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=CLEANED_MD_PATH)

@@ -27,7 +27,7 @@ def load_yaml(yaml_path: Path) -> Any:
     with yaml_path.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
     
-def evaluate_questions(queries: Any):
+def evaluate_questions(queries: Any, win_host: Any):
     """質問を１問ずつrag::rag_core_pipeline()に送付する関数"""
 
     # TODO: 
@@ -38,15 +38,21 @@ def evaluate_questions(queries: Any):
     # とりあえず気にせず、まず動くものを実装する
 
     for query in queries:
-        result = rag_core_pipeline(query)
+        rag_core_pipeline(query, win_host)
 
 def cli_eval() -> Any:
     """CLIでYAMLファイルの質問を読み込み、1問ずつRAGに処理させて回答を保存する関数"""
-    args = make_parser().parse_args(argv)
+    #args = make_parser().parse_args(argv)
 
-    queries = load_yaml(args.yaml)
+    #queries = load_yaml(args.yaml)
+    queries = load_yaml(Path("./data/question/test.yaml"))
+    logger.debug(queries)
 
     # 埋め込みベクトル作成用の Ollama 起動のための情報を取得
     win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
-    
-    evaluate_questions(win_host, queries)
+    logger.debug(win_host)
+
+    evaluate_questions(queries, win_host)
+
+if __name__ == "__main__":
+    cli_eval()
