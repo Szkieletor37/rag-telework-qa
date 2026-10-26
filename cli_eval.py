@@ -21,10 +21,13 @@ def load_yaml(yaml_path: Path) -> Any:
 def evaluate_questions(queries: Any):
     """質問を１問ずつrag::rag_core_pipeline()に送付する関数"""
 
-    pass
+    # TODO: 
+    #   現在、埋め込みベクトルの作成 -> 検索 -> 回答 を1問ごとにやっている
+    #       この状態だと、Ollamaとの通信（埋め込み時）、APIとの通信（回答時）に時間がかかる恐れあり
+    #   将来的には、複数の質問Ｎ問をまとめてバッチ処理的に回答させたい場合、N問すべての埋め込みベクトルを作成 -> N問すべてを検索し結果を取得 -> N問すべてに回答 とさせたほうが高速化できる
+    #
+    # とりあえず気にせず、まず動くものを実装する
 
-    # TODO: 埋め込みベクトルの作成、queries のすべてに対してまとめてやる -> 検索回答を1問ずつやらせる ほうがいいのでは
-    #   別プロセスの Ollama との通信に時間がかかりそうな気がする
     for query in queries:
         result = rag_core_pipeline(query)
 
