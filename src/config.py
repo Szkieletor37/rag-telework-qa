@@ -25,7 +25,7 @@ def setup_environment() -> None:
     """環境変数の設定とルートロガーの設定を行う関数"""
 
     # ロガーの設定
-    FORMATTER = '[%(levelname)s %(asctime)s] - %(message)s'
+    FORMATTER = '[%(levelname)s %(asctime)s] [%(funcName)s] - %(message)s'
     # basicConfig は何も設定されてないときのみ有効
     basicConfig(format=FORMATTER)
 
