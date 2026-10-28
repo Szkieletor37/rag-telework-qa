@@ -52,13 +52,18 @@ def rag_core_pipeline(query: Any, win_host: Any)->Any:
     #   * DB_DIR は rag_core_pipeline()は引数として受け取るべき？
 
     # chroma_collection の初期化
+    logger.info("[1/N] Collection の初期化を開始")
     chroma_collection = init_chroma_collection(db_path=DB_DIR)
-    logger.debug(chroma_collection)
 
-    return
+    logger.debug(chroma_collection)
+    logger.info("完了: Collection の初期化")
 
     # インデックスの作成
+    logger.info("資料のインデックス化を開始")
     generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=CLEANED_MD_PATH)
+    logger.info("完了: 資料のインデックス化")
+
+    return
 
     # 質問クエリを埋め込みベクトル化
     query_embedded = get_embeddings(query, win_host,embedding_model=EMBEDDING_MODEL)
