@@ -6,7 +6,7 @@ from logging import DEBUG, getLogger
 from pathlib import Path
 from typing import Any
 
-from vector_store import generate_index, get_embeddings, init_chroma_collection
+from src.rag.vector_store import generate_index, get_embeddings, init_chroma_collection
 
 DB_DIR = Path("./chroma_db")
 CLEANED_MD_PATH = Path("./data/cleaned_md/telework_guide.md")
