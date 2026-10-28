@@ -1,0 +1,7 @@
+- question_id: 1
+  category: "test"
+  question: "テレワークの対象業務選定時の留意点を教えてください。"
+  ground_truth: ""
+  ideal_chunks:
+    - chunk_text: ""
+    - chunk_text: ""
