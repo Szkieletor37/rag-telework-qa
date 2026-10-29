@@ -44,6 +44,8 @@ def cli_eval() -> Any:
     """CLIでYAMLファイルの質問を読み込み、1問ずつRAGに処理させて回答を保存する関数"""
     #args = make_parser().parse_args(argv)
 
+    logger.info("cli_eval()の処理を開始します……")
+
     #queries = load_yaml(args.yaml)
     queries = load_yaml(Path("./data/question/test.yaml"))
     logger.debug(queries)
@@ -53,6 +55,10 @@ def cli_eval() -> Any:
     logger.debug(win_host)
 
     evaluate_questions(queries, win_host)
+
+    logger.info("完了: cli_eval()のすべての処理が完了しました。")
+
+    return
 
 if __name__ == "__main__":
     cli_eval()
