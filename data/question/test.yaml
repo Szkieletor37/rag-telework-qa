@@ -5,3 +5,11 @@
   ideal_chunks:
     - chunk_text: ""
     - chunk_text: ""
+
+- question_id: 2
+  category: "test"
+  question: "テレワークの推進に当たってのポイントについて教えてください。"
+  ground_truth: ""
+  ideal_chunks:
+    - chunk_text: ""
+    - chunk_text: ""
