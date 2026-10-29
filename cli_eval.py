@@ -38,8 +38,17 @@ def evaluate_questions(query_dict: Any, win_host: Any):
     #
     # とりあえず気にせず、まず動くものを実装する
 
-    for query in queries:
-        rag_core_pipeline(query, win_host)
+    # TODO: 変数名を「query_dict」から正確にする
+    #   * ここで渡されているのはyaml を dict に変換したもの
+    #   * id とか ground_truth とかいろいろある（"query_dict"で適切か？）
+    # TODO: 「yaml を dict に変換したもの」からquestion を取り出すのはここであるべきか？
+    # TODO: ここってtqdm を付けたほうがいいのか？
+
+    for query in query_dict:
+        question = query["question"]
+        rag_core_pipeline(question, win_host)
+
+    return
 
 def cli_eval() -> Any:
     """CLIでYAMLファイルの質問を読み込み、1問ずつRAGに処理させて回答を保存する関数"""

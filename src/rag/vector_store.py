@@ -27,12 +27,12 @@ def split_text(md: str):
 
     return chunks
 
-def get_embeddings(text: str, model: Any, win_host: Any):
+def get_embeddings(text: str, win_host: Any, embedding_model: Any):
     """短いテキストについての埋め込みベクトルを生成・取得する関数"""
 
     r = requests.post(
         f"http://{win_host}:12000/api/embeddings",
-        json={"model": model, "prompt": text}
+        json={"model": embedding_model, "prompt": text}
     )
     data = r.json()
 
@@ -73,7 +73,7 @@ def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, m
 
         # 埋め込みベクタ化
         logger.info("チャンクの埋め込みベクタ化を開始")
-        embed = get_embeddings(chunk, embedding_model, win_host)
+        embed = get_embeddings(chunk, win_host, embedding_model)
         logger.info("完了: チャンクの埋め込みベクタ化")
 
         # collection に格納

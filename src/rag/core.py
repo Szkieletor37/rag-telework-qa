@@ -63,10 +63,13 @@ def rag_core_pipeline(query: Any, win_host: Any)->Any:
     generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=CLEANED_MD_PATH)
     logger.info("完了: 資料のインデックス化")
 
-    return
-
     # 質問クエリを埋め込みベクトル化
-    query_embedded = get_embeddings(query, win_host,embedding_model=EMBEDDING_MODEL)
+    logger.info("質問クエリのベクタ化を開始")
+    logger.debug(f"type : {type(query)}, value: {query}")
+    query_embedded = get_embeddings(query, win_host, embedding_model=EMBEDDING_MODEL)
+    logger.info("完了: 質問クエリのベクタ化")
+
+    return
 
     # 検索
     retrieved_contexts = retrieve_chunks(query_embedded)
