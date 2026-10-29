@@ -21,7 +21,7 @@ def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
     """ベクトル検索を行う関数"""
 
     # TODO: [query_embeddings]<-これ正しいか？型エラー出そう
-    retrieved_contexts = collection.query(
+    retrieved_chunks = collection.query(
         query_embeddings=[query_embeddings],
         n_results=top_k
     )
@@ -30,7 +30,8 @@ def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
     #   単一の埋め込みなのかリストなのか
 
     # TODO: 返り値も単一なのかリストのリストなのかがわからん
-    return retrieved_contexts
+
+    return retrieved_chunks["documents"]
 
 def generate_answer(model: Any, retrieved_contexts: Any, system_prompt: str, base_prompt: str)->Any:
     """modelに回答を生成させる関数"""
@@ -72,7 +73,16 @@ def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
     logger.info("完了: 質問クエリのベクタ化")
 
     # 検索
+    logger.info("chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
     retrieved_contexts = retrieve_chunks(chroma_collection, query_embedded, top_k=TOP_K)
+    logger.info("完了: chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
+    logger.debug(f"TOP_K: {TOP_K}")
+
+    logger.debug(f"retrieved_contexts: {retrieved_contexts}")
+    for i, chunk in enumerate(retrieved_contexts):
+        logger.debug(f" --- チャンク順位: {i}位 ---")
+        logger.debug(f"\t{chunk}")
+
 
     return
 
