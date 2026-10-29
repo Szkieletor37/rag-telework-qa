@@ -43,7 +43,7 @@ def save_experiment_result(result: Any):
     pass
 
 
-def rag_core_pipeline(query: Any, win_host: Any)->Any:
+def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
     """RAGのコアの部分を処理する関数
     """
 
@@ -65,14 +65,14 @@ def rag_core_pipeline(query: Any, win_host: Any)->Any:
 
     # 質問クエリを埋め込みベクトル化
     logger.info("質問クエリのベクタ化を開始")
-    logger.debug(f"type : {type(query)}, value: {query}")
-    query_embedded = get_embeddings(query, win_host, embedding_model=EMBEDDING_MODEL)
+    logger.debug(f"type : {type(query_text)}, value: {query_text}")
+    query_embedded = get_embeddings(query_text, win_host, embedding_model=EMBEDDING_MODEL)
     logger.info("完了: 質問クエリのベクタ化")
-
-    return
 
     # 検索
     retrieved_contexts = retrieve_chunks(query_embedded)
+
+    return
 
     # モデルに検索結果を渡し、推論させる
     result = generate_answer(retrieved_contexts)

@@ -57,7 +57,7 @@ def cli_eval() -> Any:
     logger.info("cli_eval()の処理を開始します……")
 
     #queries = load_yaml(args.yaml)
-    queries = load_yaml(Path("./data/question/test.yaml"))
+    eval_dataset = load_yaml(Path("./data/question/test.yaml"))
     logger.debug(queries)
 
     # 埋め込みベクトル作成用の Ollama 起動のための情報を取得
