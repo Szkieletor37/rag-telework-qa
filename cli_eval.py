@@ -3,12 +3,13 @@ cliからYAMLファイルを読み込み、質問を送付して回答を受け�
 """
 
 import argparse
+from logging import getLogger, DEBUG
+from pathlib import Path
 import subprocess
+from typing import Any
 import yaml
 
-from logging import getLogger, DEBUG
-from typing import Any
-from pathlib import Path
+from tqdm import tqdm
 
 from src.config import setup_environment
 from src.rag.core import rag_core_pipeline
@@ -27,7 +28,7 @@ def load_yaml(yaml_path: Path) -> Any:
     with yaml_path.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
     
-def evaluate_questions(queries: Any, win_host: Any):
+def evaluate_questions(query_dict: Any, win_host: Any):
     """質問を１問ずつrag::rag_core_pipeline()に送付する関数"""
 
     # TODO: 
