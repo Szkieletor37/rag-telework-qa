@@ -39,6 +39,9 @@ def evaluate_questions(question_data: Any, win_host: Any):
     # とりあえず気にせず、まず動くものを実装する
 
     # TODO: 「yaml を dict に変換したもの」からquestion を取り出すのはここであるべきか？
+    #   * question_data をそのまま流すべきか？（そうしたらこの関数自体不要そう）
+    #   * question だけ取り出して list にする？
+    #   * (question_id, question) というセットにする？
     # TODO: ここってtqdm を付けたほうがいいのか？
 
     for question_entry in question_data:
