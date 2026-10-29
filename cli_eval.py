@@ -28,7 +28,7 @@ def load_yaml(yaml_path: Path) -> Any:
     with yaml_path.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
     
-def evaluate_questions(query_dict: Any, win_host: Any):
+def evaluate_questions(question_data: Any, win_host: Any):
     """質問を１問ずつrag::rag_core_pipeline()に送付する関数"""
 
     # TODO: 
@@ -44,9 +44,9 @@ def evaluate_questions(query_dict: Any, win_host: Any):
     # TODO: 「yaml を dict に変換したもの」からquestion を取り出すのはここであるべきか？
     # TODO: ここってtqdm を付けたほうがいいのか？
 
-    for query in query_dict:
-        question = query["question"]
-        rag_core_pipeline(question, win_host)
+    for question_entry in question_data:
+        query_text = question_entry["question"]
+        rag_core_pipeline(query_text, win_host)
 
     return
 
@@ -57,14 +57,14 @@ def cli_eval() -> Any:
     logger.info("cli_eval()の処理を開始します……")
 
     #queries = load_yaml(args.yaml)
-    eval_dataset = load_yaml(Path("./data/question/test.yaml"))
-    logger.debug(queries)
+    question_data = load_yaml(Path("./data/question/test.yaml"))
+    logger.debug(question_data)
 
     # 埋め込みベクトル作成用の Ollama 起動のための情報を取得
     win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
     logger.debug(win_host)
 
-    evaluate_questions(queries, win_host)
+    evaluate_questions(question_data, win_host)
 
     logger.info("完了: cli_eval()のすべての処理が完了しました。")
 
