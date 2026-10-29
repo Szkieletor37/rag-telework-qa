@@ -11,6 +11,8 @@ from src.rag.vector_store import generate_index, get_embeddings, init_chroma_col
 DB_DIR = Path("./chroma_db")
 CLEANED_MD_PATH = Path("./data/cleaned_md/telework_guide.md")
 EMBEDDING_MODEL = "nomic-embed-text"
+# パラメータ: chunk をベクトル検索する際に、一致度順に上位 K 件を取得
+TOP_K = 3
 
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
@@ -70,7 +72,7 @@ def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
     logger.info("完了: 質問クエリのベクタ化")
 
     # 検索
-    retrieved_contexts = retrieve_chunks(query_embedded)
+    retrieved_contexts = retrieve_chunks(chroma_collection, query_embedded, top_k=TOP_K)
 
     return
 
