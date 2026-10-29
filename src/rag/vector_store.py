@@ -36,8 +36,6 @@ def get_embeddings(text: str, model: Any, win_host: Any):
     )
     data = r.json()
 
-    logger.debug(f"data = {data}")
-
     return data["embedding"]
 
 
