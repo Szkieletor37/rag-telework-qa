@@ -50,10 +50,20 @@ def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, m
     # チャンクに分割
     logger.info("チャンクの分割の開始")
     chunks = split_text(md)
-    for i, item in enumerate(chunks[:3]):
+
+    # debug 用に、chunks (list) の長さを制限
+    # 本番時は None または十分大きな値にする
+    DEBUG_CHUNK_LEN_LIMIT = 3
+    if DEBUG_CHUNK_LEN_LIMIT is not None:
+        chunks = chunks[:DEBUG_CHUNK_LEN_LIMIT]
+        logger.info(f"注意: デバッグ用に、資料のチャンク数は{DEBUG_CHUNK_LEN_LIMIT}に制限しています")
+
+
+    for i, item in enumerate(chunks):
             logger.debug(f"--- チャンク No.{i} ---")
             logger.debug(item)
     logger.info("完了: チャンクの分割")
+    logger.debug(f"\t チャンク数: {len(chunks)}")
 
     # 各チャンクごとに処理
     # TODO: tqdm で進捗バーを表示できると便利
