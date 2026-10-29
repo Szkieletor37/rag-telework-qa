@@ -20,7 +20,8 @@ logger.setLevel(DEBUG)
 def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
     """ベクトル検索を行う関数"""
 
-    # TODO: [query_embeddings]<-これ正しいか？型エラー出そう
+    # TODO: 複数の query を一括で受付可能なので、一括で渡すように実装を変更する
+    #   * どこでループにしてるんだっけ（けっこう外側だと思う）
     retrieved_chunks = collection.query(
         query_embeddings=[query_embeddings],
         n_results=top_k
