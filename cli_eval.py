@@ -27,28 +27,6 @@ def load_yaml(yaml_path: Path) -> Any:
     """yamlファイルを読み込み、構造体に変換する関数"""
     with yaml_path.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f)
-    
-def evaluate_questions(question_data: Any, win_host: Any):
-    """質問を１問ずつrag::rag_core_pipeline()に送付する関数"""
-
-    # TODO: 
-    #   現在、埋め込みベクトルの作成 -> 検索 -> 回答 を1問ごとにやっている
-    #       この状態だと、Ollamaとの通信（埋め込み時）、APIとの通信（回答時）に時間がかかる恐れあり
-    #   将来的には、複数の質問Ｎ問をまとめてバッチ処理的に回答させたい場合、N問すべての埋め込みベクトルを作成 -> N問すべてを検索し結果を取得 -> N問すべてに回答 とさせたほうが高速化できる
-    #
-    # とりあえず気にせず、まず動くものを実装する
-
-    # TODO: 「yaml を dict に変換したもの」からquestion を取り出すのはここであるべきか？
-    #   * question_data をそのまま流すべきか？（そうしたらこの関数自体不要そう）
-    #   * question だけ取り出して list にする？
-    #   * (question_id, question) というセットにする？
-    # TODO: ここってtqdm を付けたほうがいいのか？
-
-    for question_entry in question_data:
-        query_text = question_entry["question"]
-        rag_core_pipeline(query_text, win_host)
-
-    return
 
 def cli_eval() -> Any:
     """CLIでYAMLファイルの質問を読み込み、1問ずつRAGに処理させて回答を保存する関数"""
@@ -57,14 +35,25 @@ def cli_eval() -> Any:
     logger.info("cli_eval()の処理を開始します……")
 
     #queries = load_yaml(args.yaml)
-    question_data = load_yaml(Path("./data/question/test.yaml"))
-    logger.debug(question_data)
+    evaluation_dataset = load_yaml(Path("./data/question/test.yaml"))
+    logger.debug(evaluation_dataset)
 
     # 埋め込みベクトル作成用の Ollama 起動のための情報を取得
     win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
     logger.debug(win_host)
 
-    evaluate_questions(question_data, win_host)
+    # 1問ずつ rag_core_pipeline() に渡す
+    # TODO: 
+    #   現在、埋め込みベクトルの作成 -> 検索 -> 回答 を1問ごとにやっている
+    #       この状態だと、Ollamaとの通信（埋め込み時）、APIとの通信（回答時）に時間がかかる恐れあり
+    #   将来的には、複数の質問Ｎ問をまとめてバッチ処理的に回答させたい場合、N問すべての埋め込みベクトルを作成 -> N問すべてを検索し結果を取得 -> N問すべてに回答 とさせたほうが高速化できる
+    #
+    # とりあえず気にせず、まず動くものを実装する
+
+    for question_entry in evaluation_dataset:
+        query_text = question_entry["question"]
+        rag_core_pipeline(query_text, win_host)
+
 
     logger.info("完了: cli_eval()のすべての処理が完了しました。")
 
