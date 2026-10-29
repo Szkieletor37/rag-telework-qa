@@ -38,9 +38,6 @@ def evaluate_questions(question_data: Any, win_host: Any):
     #
     # とりあえず気にせず、まず動くものを実装する
 
-    # TODO: 変数名を「query_dict」から正確にする
-    #   * ここで渡されているのはyaml を dict に変換したもの
-    #   * id とか ground_truth とかいろいろある（"query_dict"で適切か？）
     # TODO: 「yaml を dict に変換したもの」からquestion を取り出すのはここであるべきか？
     # TODO: ここってtqdm を付けたほうがいいのか？
 
