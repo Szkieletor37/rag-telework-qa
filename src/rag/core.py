@@ -6,11 +6,9 @@ from logging import DEBUG, getLogger
 from pathlib import Path
 from typing import Any
 
+from src.config import DB_DIR, CLEANED_MD_PATH, EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY
 from src.rag.vector_store import generate_index, get_embeddings, init_chroma_collection
 
-DB_DIR = Path("./chroma_db")
-CLEANED_MD_PATH = Path("./data/cleaned_md/telework_guide.md")
-EMBEDDING_MODEL = "nomic-embed-text"
 # パラメータ: chunk をベクトル検索する際に、一致度順に上位 K 件を取得
 TOP_K = 3
 
