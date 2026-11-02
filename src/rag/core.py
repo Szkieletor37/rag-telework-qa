@@ -6,8 +6,10 @@ from logging import DEBUG, getLogger
 from pathlib import Path
 from typing import Any
 
-from src.config import DB_DIR, CLEANED_MD_PATH, EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY, TOP_K
+from src.config import DB_DIR, CLEANED_MD_PATH, EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY, TOP_K, INFERENCE_PROMPT_PATH
 from src.rag.vector_store import generate_index, get_embeddings, init_chroma_collection
+
+from jinja2 import Template
 
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
@@ -30,7 +32,22 @@ def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
 
     return retrieved_chunks["documents"]
 
-def generate_answer(model: Any, retrieved_contexts: Any, system_prompt: str, base_prompt: str)->Any:
+def build_inference_prompt(prompt_template: str, query_text: str, retrieved_chunks: Any)->Any:
+    """テンプレートプロンプト、質問文、検索結果から、推論用プロンプトを組み立てる関数"""
+
+    documents_section = "\n".join(
+        f"- [Doc {i + 1}]\n{doc}" for i, doc in enumerate(retrieved_chunks)
+    )
+
+    template = Template(prompt_template)
+
+    return template.render(
+        query_text=query_text,
+        documents_section=documents_section
+
+    )
+
+def generate_answer(inference_prompt: str, inference_model: Any)->Any:
     """modelに回答を生成させる関数"""
 
     # TODO: 型が適当すぎる
@@ -82,11 +99,20 @@ def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
         logger.debug(f" --- チャンク順位: {i+1}位 ---")
         logger.debug(f"\t{chunk}")
 
+    # 推論させるためのプロンプトを組み立てる
+    inference_prompt_template = INFERENCE_PROMPT_PATH.read_text(encoding="utf-8")
+    inference_prompt = build_inference_prompt(inference_prompt_template, query_text, retrieved_contexts)
+
+    logger.debug("推論用プロンプト:")
+    logger.debug(inference_prompt)
 
     return
 
+
     # モデルに検索結果を渡し、推論させる
-    result = generate_answer(retrieved_contexts)
+    result = generate_answer(inference_prompt, inference_model=INFERENCE_MODEL)
+
+    return
 
     # 回答を保存
     save_experiment_result(result)
