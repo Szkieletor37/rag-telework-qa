@@ -10,6 +10,8 @@ import chromadb
 import requests
 from tqdm import tqdm
 
+from src.config import DB_DIR, EMBEDDING_MODEL, CLEANED_MD_PATH
+
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
 
@@ -99,3 +101,18 @@ def init_chroma_collection(db_path: Path):
     )
 
     return chroma_collection
+
+def build_or_update_index(win_host: Any):
+
+    # chroma_collection の初期化
+    logger.debug("Collection の初期化を開始")
+    chroma_collection = init_chroma_collection(db_path=DB_DIR)
+
+    logger.debug(chroma_collection)
+    logger.debug("完了: Collection の初期化")
+
+    # インデックスの作成
+    logger.debug("資料のインデックス化を開始")
+    generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=CLEANED_MD_PATH)
+    logger.debug("完了: 資料のインデックス化")
+
