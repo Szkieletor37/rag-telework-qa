@@ -84,18 +84,6 @@ def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
     #   * DB_DIR はどのファイルで宣言すべき？
     #   * DB_DIR は rag_core_pipeline()は引数として受け取るべき？
 
-    # chroma_collection の初期化
-    logger.debug("[1/N] Collection の初期化を開始")
-    chroma_collection = init_chroma_collection(db_path=DB_DIR)
-
-    logger.debug(chroma_collection)
-    logger.debug("完了: Collection の初期化")
-
-    # インデックスの作成
-    logger.debug("資料のインデックス化を開始")
-    generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=CLEANED_MD_PATH)
-    logger.debug("完了: 資料のインデックス化")
-
     # 質問クエリを埋め込みベクトル化
     logger.debug("質問クエリのベクタ化を開始")
     logger.debug(f"type : {type(query_text)}, value: {query_text}")
