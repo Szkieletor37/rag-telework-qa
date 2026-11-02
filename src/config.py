@@ -15,7 +15,15 @@ DATA_DIR = PROJECT_ROOT / "data"
 CLEANED_MD_DIR = DATA_DIR / "cleaned_md"
 QUESTION_DIR = DATA_DIR / "question"
 PROMPTS_DIR = PROJECT_ROOT / "prompts"
-DB_DIR = Path("./chroma_db")
+INFERENCE_PROMPT_DIR = PROMPTS_DIR / "inference"
+
+# DBのパスの定義
+DB_DIR = PROJECT_ROOT / "chroma_db"
+
+# 推論用プロンプトファイルのパスｓ
+INFERENCE_PROMPT_PATH = INFERENCE_PROMPT_DIR / "prompt_template.md"
+
+# 検索用資料のパス
 CLEANED_MD_PATH = Path("./data/cleaned_md/telework_guide.md")
 
 # 環境変数
@@ -25,6 +33,7 @@ GEMINI_API_KEY_FREE = os.getenv('GEMINI_API_KEY_FREE')
 # モデルの指定
 EMBEDDING_MODEL = "nomic-embed-text"
 INFERENCE_MODEL = "gemini-3.5-flash-lite"
+TOP_K = 3
 
 def setup_environment() -> None:
     """環境変数の設定とルートロガーの設定を行う関数"""
