@@ -14,7 +14,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
 CLEANED_MD_DIR = DATA_DIR / "cleaned_md"
 QUESTION_DIR = DATA_DIR / "question"
-PROMPT_DIR = PROJECT_ROOT / "prompt"
+PROMPTS_DIR = PROJECT_ROOT / "prompts"
 DB_DIR = Path("./chroma_db")
 CLEANED_MD_PATH = Path("./data/cleaned_md/telework_guide.md")
 
