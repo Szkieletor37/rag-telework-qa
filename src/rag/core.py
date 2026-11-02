@@ -6,9 +6,12 @@ from logging import DEBUG, getLogger
 from pathlib import Path
 from typing import Any
 
-from src.config import DB_DIR, CLEANED_MD_PATH, EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY, TOP_K, INFERENCE_PROMPT_PATH
+from src.config import DB_DIR, CLEANED_MD_PATH, EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY_FREE, TOP_K, INFERENCE_PROMPT_PATH
 from src.rag.vector_store import generate_index, get_embeddings, init_chroma_collection
 
+from google import genai
+from google.genai import types
+from google.genai.types import GenerateContentConfig
 from jinja2 import Template
 
 logger = getLogger(__name__)
@@ -20,16 +23,14 @@ def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
     # TODO: 複数の query を一括で受付可能なので、一括で渡すように実装を変更する？
     #   * そうすると全体の設計の見直しが必要かも
     #   * そもそも不要かも
+    # TODO: 引数の型がわからん
+    #   単一の埋め込みなのかリストなのか
     retrieved_chunks = collection.query(
         query_embeddings=[query_embeddings],
         n_results=top_k
     )
-    # TODO: collection.query()を用いて検索を行う？
-    # TODO: 引数の型がわからん
-    #   単一の埋め込みなのかリストなのか
 
-    # TODO: 返り値も単一なのかリストのリストなのかがわからん
-
+    # 返り値は2重リストだよ
     return retrieved_chunks["documents"]
 
 def build_inference_prompt(prompt_template: str, query_text: str, retrieved_chunks: Any)->Any:
@@ -50,10 +51,25 @@ def build_inference_prompt(prompt_template: str, query_text: str, retrieved_chun
 def generate_answer(inference_prompt: str, inference_model: Any)->Any:
     """modelに回答を生成させる関数"""
 
-    # TODO: 型が適当すぎる
-    # TODO: Gemini APIを用いる
+    client = genai.Client(api_key=GEMINI_API_KEY_FREE)
 
-    pass
+    response = client.models.generate_content(
+        model=inference_model,
+        contents=inference_prompt,
+        config=GenerateContentConfig(
+            max_output_tokens=2000,
+            temperature=0.1
+        )
+    )
+
+    logger.debug(
+        f"""使用token: 
+        prompt:  {response.usage_metadata.prompt_token_count}
+        response:{response.usage_metadata.candidates_token_count}
+        total:   {response.usage_metadata.total_token_count}"""
+    )
+
+    return response.text
 
 def save_experiment_result(result: Any):
     """実験結果（質問、回答、context, 設定）を、JSONファイルとして保存する"""
@@ -106,11 +122,9 @@ def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
     logger.debug("推論用プロンプト:")
     logger.debug(inference_prompt)
 
-    return
-
-
     # モデルに検索結果を渡し、推論させる
     result = generate_answer(inference_prompt, inference_model=INFERENCE_MODEL)
+    logger.debug(result)
 
     return
 
