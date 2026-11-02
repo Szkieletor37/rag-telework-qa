@@ -72,7 +72,7 @@ def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
     # 検索
     # [["chunk1...", "chunk2...", "chunk3..."]] と2重リストで返ってくるので、[0]で内側のリストを取り出す
     logger.debug("chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
-    retrieved_contexts = retrieve_chunks(chroma_collection, query_embedded, top_k=TOP_K)
+    retrieved_contexts = retrieve_chunks(chroma_collection, query_embedded, top_k=TOP_K)[0]
     logger.debug("完了: chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
     logger.debug(f"TOP_K: {TOP_K}")
 
