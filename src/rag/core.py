@@ -56,27 +56,27 @@ def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
     #   * DB_DIR は rag_core_pipeline()は引数として受け取るべき？
 
     # chroma_collection の初期化
-    logger.info("[1/N] Collection の初期化を開始")
+    logger.debug("[1/N] Collection の初期化を開始")
     chroma_collection = init_chroma_collection(db_path=DB_DIR)
 
     logger.debug(chroma_collection)
-    logger.info("完了: Collection の初期化")
+    logger.debug("完了: Collection の初期化")
 
     # インデックスの作成
-    logger.info("資料のインデックス化を開始")
+    logger.debug("資料のインデックス化を開始")
     generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=CLEANED_MD_PATH)
-    logger.info("完了: 資料のインデックス化")
+    logger.debug("完了: 資料のインデックス化")
 
     # 質問クエリを埋め込みベクトル化
-    logger.info("質問クエリのベクタ化を開始")
+    logger.debug("質問クエリのベクタ化を開始")
     logger.debug(f"type : {type(query_text)}, value: {query_text}")
     query_embedded = get_embeddings(query_text, win_host, embedding_model=EMBEDDING_MODEL)
-    logger.info("完了: 質問クエリのベクタ化")
+    logger.debug("完了: 質問クエリのベクタ化")
 
     # 検索
-    logger.info("chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
+    logger.debug("chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
     retrieved_contexts = retrieve_chunks(chroma_collection, query_embedded, top_k=TOP_K)
-    logger.info("完了: chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
+    logger.debug("完了: chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
     logger.debug(f"TOP_K: {TOP_K}")
 
     logger.debug(f"retrieved_contexts: {retrieved_contexts}")
