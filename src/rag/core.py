@@ -70,14 +70,16 @@ def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
     logger.debug("完了: 質問クエリのベクタ化")
 
     # 検索
+    # [["chunk1...", "chunk2...", "chunk3..."]] と2重リストで返ってくるので、[0]で内側のリストを取り出す
     logger.debug("chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
     retrieved_contexts = retrieve_chunks(chroma_collection, query_embedded, top_k=TOP_K)
     logger.debug("完了: chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
     logger.debug(f"TOP_K: {TOP_K}")
 
+    # 順位は 1-index で確認したいので i+1 にする
     logger.debug(f"retrieved_contexts: {retrieved_contexts}")
     for i, chunk in enumerate(retrieved_contexts):
-        logger.debug(f" --- チャンク順位: {i}位 ---")
+        logger.debug(f" --- チャンク順位: {i+1}位 ---")
         logger.debug(f"\t{chunk}")
 
 
