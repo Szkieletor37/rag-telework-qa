@@ -105,6 +105,7 @@ def init_chroma_collection(db_path: Path):
 def build_or_update_index(win_host: Any):
 
     # chroma_collection の初期化
+    # TODO:get_or_create_collection() にして、nameオプションで名前を付ける？
     logger.debug("Collection の初期化を開始")
     chroma_collection = init_chroma_collection(db_path=DB_DIR)
 
