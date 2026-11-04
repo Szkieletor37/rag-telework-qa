@@ -11,7 +11,8 @@ import yaml
 
 from tqdm import tqdm
 
-from src.config import setup_environment
+from src.config import setup_environment, DB_DIR
+from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
 from src.rag.core import rag_core_pipeline
 
 setup_environment()
@@ -34,6 +35,10 @@ def cli_eval() -> Any:
 
     logger.debug("cli_eval()の処理を開始します……")
 
+    chroma_client = init_chroma_client(DB_DIR)
+
+    chroma_collection = get_or_create_chroma_collection(chroma_client)
+
     #queries = load_yaml(args.yaml)
     evaluation_dataset = load_yaml(Path("./data/question/test.yaml"))
     logger.debug(evaluation_dataset)
@@ -52,7 +57,7 @@ def cli_eval() -> Any:
 
     for question_entry in evaluation_dataset:
         query_text = question_entry["question"]
-        rag_core_pipeline(query_text, win_host)
+        rag_core_pipeline(query_text, win_host, chroma_collection)
 
 
     logger.debug("完了: cli_eval()のすべての処理が完了しました。")
