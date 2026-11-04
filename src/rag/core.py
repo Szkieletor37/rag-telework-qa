@@ -75,7 +75,7 @@ def save_experiment_result(result: Any):
     pass
 
 
-def rag_core_pipeline(query_text: Any, win_host: Any)->Any:
+def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any)->Any:
     """RAGのコアの部分を処理する関数
     """
 
