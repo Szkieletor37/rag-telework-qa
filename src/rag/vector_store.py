@@ -41,7 +41,7 @@ def get_embeddings(text: str, win_host: Any, embedding_model: Any):
     return data["embedding"]
 
 
-def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, md_path: Path):
+def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, md_path: Path, debug_chunk_len_limit=None):
     """検索対象の資料のvector indexを構築して、chroma_dbへ格納する関数"""
 
     # markdown の読み込み
@@ -55,7 +55,7 @@ def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, m
 
     # debug 用に、chunks (list) の長さを制限
     # 本番時は None または十分大きな値にする
-    DEBUG_CHUNK_LEN_LIMIT = 3
+    DEBUG_CHUNK_LEN_LIMIT = debug_chunk_len_limit
     if DEBUG_CHUNK_LEN_LIMIT is not None:
         chunks = chunks[:DEBUG_CHUNK_LEN_LIMIT]
         logger.debug(f"注意: デバッグ用に、資料のチャンク数は{DEBUG_CHUNK_LEN_LIMIT}に制限しています")
@@ -115,7 +115,7 @@ def delete_chroma_collection(chroma_client: Any):
 
     return
 
-def build_index(win_host: Any):
+def build_index(win_host: Any, md_path: Any):
 
     logger.debug("chroma_client の初期化を開始")
     chroma_client = init_chroma_client(db_path=DB_DIR)
@@ -129,6 +129,6 @@ def build_index(win_host: Any):
 
     # インデックスの作成
     logger.debug("資料のインデックス化を開始")
-    generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=CLEANED_MD_PATH)
+    generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=md_path)
     logger.debug("完了: 資料のインデックス化")
 
