@@ -90,25 +90,39 @@ def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, m
     
     return
 
-def init_chroma_collection(db_path: Path):
-    """ chroma_clientを初期化して、collectionを作成する関数"""
+def init_chroma_client(db_path: Path):
+    """ chroma_clientを初期化する関数"""
 
     # chroma_client の初期化
     chroma_client = chromadb.PersistentClient(db_path)
 
-    # collection の作成
+    return chroma_client
+
+
+def get_or_create_chroma_collection(chroma_client: Any):
+    """ chroma_collection を作成または取得する関数 """
+    # TODO: 本当は name をハードコードするのやめるべきで、引数で与えるべき？
     chroma_collection = chroma_client.get_or_create_collection(
         name="local_md"
     )
 
     return chroma_collection
 
-def build_or_update_index(win_host: Any):
+def delete_chroma_collection(chroma_client: Any):
+    """ chroma_collection を削除する関数"""
 
-    # chroma_collection の初期化
-    # TODO:get_or_create_collection() にして、nameオプションで名前を付ける？
-    logger.debug("Collection の初期化を開始")
-    chroma_collection = init_chroma_collection(db_path=DB_DIR)
+    chroma_client.delete_collection(name="local_md")
+
+    return
+
+def build_index(win_host: Any):
+
+    logger.debug("chroma_client の初期化を開始")
+    chroma_client = init_chroma_client(db_path=DB_DIR)
+
+    delete_chroma_collection(chroma_client)
+
+    chroma_collection = get_or_create_chroma_collection(chroma_client)
 
     logger.debug(chroma_collection)
     logger.debug("完了: Collection の初期化")
