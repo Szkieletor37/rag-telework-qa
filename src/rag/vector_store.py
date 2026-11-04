@@ -79,6 +79,7 @@ def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, m
         logger.debug("完了: チャンクの埋め込みベクタ化")
 
         # collection に格納
+        # TODO: ループ内では list に append して、ループ外で1回の .add() にすることもできる
         chroma_collection.add(
             documents=[chunk],
             embeddings=[embed],
