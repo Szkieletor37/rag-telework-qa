@@ -6,11 +6,10 @@ from logging import DEBUG, getLogger
 from pathlib import Path
 from typing import Any
 
-from src.config import DB_DIR, CLEANED_MD_PATH, EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY_FREE, TOP_K, INFERENCE_PROMPT_PATH
-from src.rag.vector_store import generate_index, get_embeddings, init_chroma_collection
+from src.config import EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY_FREE, TOP_K, INFERENCE_PROMPT_PATH
+from src.rag.vector_store import get_embeddings
 
 from google import genai
-from google.genai import types
 from google.genai.types import GenerateContentConfig
 from jinja2 import Template
 
