@@ -6,7 +6,7 @@ from logging import DEBUG, getLogger
 from pathlib import Path
 from typing import Any
 
-from src.config import EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY_FREE, TOP_K, INFERENCE_PROMPT_PATH
+from src.config import EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY, TOP_K, INFERENCE_PROMPT_PATH
 from src.rag.vector_store import get_embeddings
 
 from google import genai
@@ -50,7 +50,7 @@ def build_inference_prompt(prompt_template: str, query_text: str, retrieved_chun
 def generate_answer(inference_prompt: str, inference_model: Any)->Any:
     """modelに回答を生成させる関数"""
 
-    client = genai.Client(api_key=GEMINI_API_KEY_FREE)
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
     response = client.models.generate_content(
         model=inference_model,
