@@ -56,20 +56,23 @@ def cli_eval() -> Any:
     #
     # とりあえず気にせず、まず動くものを実装する
 
+    results = []
     for question_entry in evaluation_dataset:
         query_text = question_entry["question"]
         result = rag_core_pipeline(query_text, win_host, chroma_collection)
-        params = {
-            "embedding_model": EMBEDDING_MODEL,
-            "inference_model": INFERENCE_MODEL,
-            "chunking_strategy": "fixed_size",
-            "chunking_params": {
-                "chunk_size": CHUNK_SIZE,
-                "chunk_overlap": CHUNK_OVERLAP,
-            },
-            "top_k": TOP_K
-        }
-        save_experiment_result(question_entry, result, params)
+        results.append(result)
+
+    params = {
+        "embedding_model": EMBEDDING_MODEL,
+        "inference_model": INFERENCE_MODEL,
+        "chunking_strategy": "fixed_size",
+        "chunking_params": {
+            "chunk_size": CHUNK_SIZE,
+            "chunk_overlap": CHUNK_OVERLAP,
+        },
+        "top_k": TOP_K
+    }
+    save_experiment_result(evaluation_dataset, results, params)
         
 
 
