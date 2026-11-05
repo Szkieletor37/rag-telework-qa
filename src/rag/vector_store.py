@@ -10,7 +10,7 @@ import chromadb
 import requests
 from tqdm import tqdm
 
-from src.config import DB_DIR, EMBEDDING_MODEL, CLEANED_MD_PATH
+from src.config import DB_DIR, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
 
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
@@ -18,14 +18,14 @@ logger.setLevel(DEBUG)
 def split_text(md: str):
     """チャンキングを行う関数
     """
-    chunk_size = 200
-    overlap = 50
+    chunk_size = CHUNK_SIZE
+    chunk_overlap = CHUNK_OVERLAP
     chunks = []
     start = 0
     while start < len(md):
         end = start + chunk_size
         chunks.append(md[start:end])
-        start += chunk_size - overlap
+        start += chunk_size - chunk_overlap
 
     return chunks
 

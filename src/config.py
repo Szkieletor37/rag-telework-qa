@@ -36,6 +36,10 @@ EMBEDDING_MODEL = "nomic-embed-text"
 INFERENCE_MODEL = "gemini-3.5-flash-lite"
 TOP_K = 3
 
+# 固定チャンク長のときのチャンク関連のパラメータ
+CHUNK_SIZE = 200
+CHUNK_OVERLAP = 50
+
 def setup_environment() -> None:
     """環境変数の設定とルートロガーの設定を行う関数"""
 
