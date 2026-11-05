@@ -14,6 +14,7 @@ from tqdm import tqdm
 from src.config import setup_environment, DB_DIR
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
 from src.rag.core import rag_core_pipeline
+from src.rag.output import save_experiment_result
 
 setup_environment()
 
@@ -57,7 +58,9 @@ def cli_eval() -> Any:
 
     for question_entry in evaluation_dataset:
         query_text = question_entry["question"]
-        rag_core_pipeline(query_text, win_host, chroma_collection)
+        result = rag_core_pipeline(query_text, win_host, chroma_collection)
+        save_experiment_result(question_entry, result)
+        
 
 
     logger.debug("完了: cli_eval()のすべての処理が完了しました。")

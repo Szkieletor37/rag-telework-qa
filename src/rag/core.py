@@ -70,10 +70,6 @@ def generate_answer(inference_prompt: str, inference_model: Any)->Any:
 
     return response.text
 
-def save_experiment_result(result: Any):
-    """実験結果（質問、回答、context, 設定）を、JSONファイルとして保存する"""
-    pass
-
 
 def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any)->Any:
     """RAGのコアの部分を処理する関数
@@ -110,16 +106,14 @@ def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any)->A
     logger.debug(inference_prompt)
 
     # モデルに検索結果を渡し、推論させる
-    result = generate_answer(inference_prompt, inference_model=INFERENCE_MODEL)
-    logger.debug(result)
+    response_text = generate_answer(inference_prompt, inference_model=INFERENCE_MODEL)
+    logger.debug(response_text)
 
-    return
+    result = {
+        "response_text": response_text,
+        "retrieved_contexts": retrieved_contexts
+    }
 
-    # 回答を保存
-    save_experiment_result(result)
 
     # Webから呼んだ場合は結果を返して出力？
-    # return result
-
-
-
+    return result
