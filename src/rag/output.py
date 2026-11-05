@@ -17,6 +17,8 @@ def save_experiment_result(evaluation_dataset: Any, results: Any, params: Any) -
 
     jst_timestamp = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d_%H%M%S")
 
+    dir_path = RESULTS_DIR / jst_timestamp
+    dir_path.mkdir(parents=True)
 
     logger.debug("実験結果のJSONファイル出力を開始します")
     for i, (question_entry, result) in enumerate(tqdm(zip(evaluation_dataset, results))):
@@ -24,7 +26,7 @@ def save_experiment_result(evaluation_dataset: Any, results: Any, params: Any) -
         data = question_entry | result | params
 
         # 出力ファイル名は 1-index にする
-        file_path = RESULTS_DIR / jst_timestamp / f"result_{i+1}.json"
+        file_path = dir_path / f"result_{i+1}.json"
 
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(
