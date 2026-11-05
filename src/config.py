@@ -14,13 +14,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
 CLEANED_MD_DIR = DATA_DIR / "cleaned_md"
 QUESTION_DIR = DATA_DIR / "question"
+RESULTS_DIR = DATA_DIR / "results"
 PROMPTS_DIR = PROJECT_ROOT / "prompts"
 INFERENCE_PROMPT_DIR = PROMPTS_DIR / "inference"
 
 # DBのパスの定義
 DB_DIR = PROJECT_ROOT / "chroma_db"
 
-# 推論用プロンプトファイルのパスｓ
+# 推論用プロンプトファイルのパス
 INFERENCE_PROMPT_PATH = INFERENCE_PROMPT_DIR / "prompt_template.md"
 
 # 検索用資料のパス
