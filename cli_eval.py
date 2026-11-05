@@ -11,7 +11,7 @@ import yaml
 
 from tqdm import tqdm
 
-from src.config import setup_environment, DB_DIR
+from src.config import setup_environment, DB_DIR, TOP_K, EMBEDDING_MODEL, INFERENCE_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
 from src.rag.core import rag_core_pipeline
 from src.rag.output import save_experiment_result
@@ -59,7 +59,17 @@ def cli_eval() -> Any:
     for question_entry in evaluation_dataset:
         query_text = question_entry["question"]
         result = rag_core_pipeline(query_text, win_host, chroma_collection)
-        save_experiment_result(question_entry, result)
+        params = {
+            "embedding_model": EMBEDDING_MODEL,
+            "inference_model": INFERENCE_MODEL,
+            "chunking_strategy": "fixed_size",
+            "chunking_params": {
+                "chunk_size": CHUNK_SIZE,
+                "chunk_overlap": CHUNK_OVERLAP,
+            },
+            "top_k": TOP_K
+        }
+        save_experiment_result(question_entry, result, params)
         
 
 
