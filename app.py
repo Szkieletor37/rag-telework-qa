@@ -1,10 +1,11 @@
+from logging import getLogger, DEBUG
 import subprocess
 import streamlit as st
 import chromadb
 import requests
 
 from src.config import setup_environment, DB_DIR, CLEANED_MD_PATH
-from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection build_index
+from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection, build_index
 from src.rag.core import rag_core_pipeline
 from src.rag.output import save_experiment_result
 
@@ -30,23 +31,6 @@ def main():
     # サイドバーの設定
     st.sidebar.title("設定")
 
-    """実用を想定した際、不要そうな設定なのでコメントアウト
-
-    model = st.sidebar.text_input("モデル名", value="llama3.1:8b")
-    temperature = st.sidebar.slider("temperature", 0.0, 2.0, 0.3, 0.1)
-    system_prompt = st.sidebar.text_area(
-        "System Prompt",
-        "あなたは茶目っ気のあるボクっ娘です。日本語で回答してください。"
-    )
-
-    # Wordファイルのアップロード
-    uploaded_files = st.sidebar.file_uploader(
-        "Wordファイルをアップロード(.docxのみ)",
-        type=["docx"],
-        accept_multiple_files=True
-    )
-    """
-
     if st.sidebar.button("インデックス作成"):
         build_index(win_host, md_path=CLEANED_MD_PATH)
 
@@ -58,15 +42,6 @@ def main():
     # 会話の履歴を保持
     if "messages" not in st.session_state:
         st.session_state.messages = []
-
-    """未実装のためコメントアウト
-    # 会話の履歴をリセットするボタン
-    if st.sidebar.button("会話をリセット"):
-        st.session_state.messages = []
-
-        # TODO//マルチターンをリセットする処理
-        st.rerun()
-    """
 
     # 会話の履歴を表示
     for m in st.session_state.messages:
@@ -85,41 +60,6 @@ def main():
         print(f"RAGの結果: {result}")
         with st.chat_message('assistant'):
             st.write(f"RAGの結果: {result["retrieved_contexts"]}")
-
-        """
-        print(f"results[\"documents\"]: {results["documents"]}")
-        print(bool(results["documents"]))
-
-        context_text = "\n".join(results["documents"][0]) if results["documents"] else ""
-        if context_text.strip():
-            rag_prompt = f"""
-            """
-            以下は関連ドキュメントの抜粋です。
-            {context_text}
-            この情報を参考に以下の質問に答えてください。
-            {prompt}
-            """
-            """
-            final_user_prompt = rag_prompt
-        else:
-            final_user_prompt = prompt
-
-        print(f"final_user_prompt: {final_user_prompt}")
-
-        st.session_state.messages.append({"role": "user", "content": final_user_prompt})
-
-        if system_prompt.strip():
-            messages = [{"role": "system", "content": system_prompt}] + st.session_state.messages
-        else:
-            messages = st.session_state.messages
-
-        stream = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=temperature,
-            stream=True
-        )
-        """
 
         params = {
             "embedding_model": EMBEDDING_MODEL,
