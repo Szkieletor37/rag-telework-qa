@@ -1,61 +1,37 @@
 import subprocess
 import streamlit as st
-from openai import OpenAI
 import chromadb
-from docx import Document
 import requests
 
-DB_DIR = "./chroma_db"
+from src.config import setup_environment, DB_DIR, CLEANED_MD_PATH
+from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection build_index
+from src.rag.core import rag_core_pipeline
+from src.rag.output import save_experiment_result
 
-def ollama_embed(text, win_host):
-    r = requests.post(
-        f"http://{win_host}:12000/api/embeddings",
-        json={"model": "nomic-embed-text", "prompt": text}
-    )
-    data = r.json()
-    print(f"data = {data}")
-    return data["embedding"]
+setup_environment()
 
-def load_word_document(file):
-    """wordファイルを読み込む関数
-    """
-    return "\n".join(para.text for para in Document(file).paragraphs)
+logger = getLogger(__name__)
+logger.setLevel(DEBUG)
 
-def split_text(text):
-    """ チャンキングする関数
-    """
-    chunk_size = 200
-    overlap = 50
-    chunks = []
-    start = 0
-    while start < len(text):
-        end = start + chunk_size
-        chunks.append(text[start:end])
-        start += chunk_size - overlap
-
-    return chunks
 
 def main():
 
-    chroma_client = chromadb.PersistentClient(path=DB_DIR)
+    chroma_client = init_chroma_client(DB_DIR)
+
+    chroma_collection = get_or_create_chroma_collection(chroma_client)
 
     if "collection" not in st.session_state:
-        st.session_state.collection = chroma_client.get_or_create_collection(
-            name="local_docs"
-        )
+        st.session_state.collection = get_or_create_chroma_collection
     
     win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
 
-    # Ollamaからインストールしたモデルを使ったベクトル化関数
-
-    # Wordファイルを読み込む関数
-
-    # チャンキング関数
-    
     st.set_page_config(page_title="Local LLM Chat")
 
     # サイドバーの設定
     st.sidebar.title("設定")
+
+    """実用を想定した際、不要そうな設定なのでコメントアウト
+
     model = st.sidebar.text_input("モデル名", value="llama3.1:8b")
     temperature = st.sidebar.slider("temperature", 0.0, 2.0, 0.3, 0.1)
     system_prompt = st.sidebar.text_area(
@@ -69,18 +45,11 @@ def main():
         type=["docx"],
         accept_multiple_files=True
     )
+    """
 
     if st.sidebar.button("インデックス作成"):
-        for file in uploaded_files:
-            text = load_word_document(file)
-            chunks = split_text(text)
-            for i, chunk in enumerate(chunks):
-                embed = ollama_embed(chunk, win_host)
-                st.session_state.collection.add(
-                    documents=[chunk],
-                    embeddings=[embed],
-                    ids=[f"{file.name}_{i}"]
-                )
+        build_index(win_host, md_path=CLEANED_MD_PATH)
+
         st.sidebar.success("インデックス作成完了")
 
     # タイトル
@@ -90,55 +59,46 @@ def main():
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
+    """未実装のためコメントアウト
     # 会話の履歴をリセットするボタン
     if st.sidebar.button("会話をリセット"):
         st.session_state.messages = []
 
-        try:
-            chroma_client.delete_collection(name="local_docs")
-        except Exception:
-            pass
-        st.session_state.collection = chroma_client.get_or_create_collection(name="local_docs")
+        # TODO//マルチターンをリセットする処理
         st.rerun()
+    """
 
     # 会話の履歴を表示
     for m in st.session_state.messages:
         with st.chat_message(m["role"]):
             st.write(m["content"])
 
-    prompt = st.chat_input("メッセージを入力")
+    query_text = st.chat_input("メッセージを入力")
 
-    client=OpenAI(
-        api_key="hogehoge",
-        # ollamaサーバーを指定
-        base_url=f"http://{win_host}:12000/v1"
-    )
-
-    if prompt:
+    if query_text:
 
         with st.chat_message("user"):
             st.write(prompt)
 
-        query_embed = ollama_embed(prompt, win_host)
-        results = st.session_state.collection.query(
-            query_embeddings=[query_embed],
-            n_results=2
-        )
+        result = rag_core_pipeline(query_text, win_host, st.session_state.collection)
 
-        print(f"RAGの結果: {results}")
+        print(f"RAGの結果: {result}")
         with st.chat_message('assistant'):
-            st.write(f"RAGの結果: {results}")
+            st.write(f"RAGの結果: {result["retrieved_contexts"]}")
 
+        """
         print(f"results[\"documents\"]: {results["documents"]}")
         print(bool(results["documents"]))
 
         context_text = "\n".join(results["documents"][0]) if results["documents"] else ""
         if context_text.strip():
             rag_prompt = f"""
+            """
             以下は関連ドキュメントの抜粋です。
             {context_text}
             この情報を参考に以下の質問に答えてください。
             {prompt}
+            """
             """
             final_user_prompt = rag_prompt
         else:
@@ -159,15 +119,24 @@ def main():
             temperature=temperature,
             stream=True
         )
-        with st.chat_message("assistant"):
-            placeholder = st.empty()
-            stream_response = ""
-            for chunk in stream:
-                stream_response += chunk.choices[0].delta.content
-                placeholder.write(stream_response)
+        """
 
+        params = {
+            "embedding_model": EMBEDDING_MODEL,
+            "inference_model": INFERENCE_MODEL,
+            "chunking_strategy": "fixed_size",
+            "chunking_params": {
+                "chunk_size": CHUNK_SIZE,
+                "chunk_overlap": CHUNK_OVERLAP,
+            },
+            "top_k": TOP_K
+        }
+        save_experiment_result(evaluation_dataset, results, params)
+ 
+        with st.chat_message("assistant"):
+            st.write(result["response_text"])
         
-        st.session_state.messages.append({"role": "assistant", "content": stream_response})
+        st.session_state.messages.append({"role": "assistant", "content": result["response_text"]})
 
 
 
