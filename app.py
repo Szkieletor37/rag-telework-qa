@@ -26,6 +26,7 @@ def main():
     
     win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
 
+    # タイトル
     st.set_page_config(page_title="Local LLM Chat")
 
     # サイドバーの設定
@@ -36,12 +37,15 @@ def main():
 
         st.sidebar.success("インデックス作成完了")
 
-    # タイトル
-    st.title("Local LLM Chat")
 
     # 会話の履歴を保持
     if "messages" not in st.session_state:
         st.session_state.messages = []
+
+    # 会話の履歴をリセットするボタン
+    if st.sidebar.button("会話をリセット"):
+        st.session_state.messages = []
+        st.rerun()
 
     # 会話の履歴を表示
     for m in st.session_state.messages:
@@ -54,6 +58,8 @@ def main():
 
         with st.chat_message("user"):
             st.write(query_text)
+
+        st.session_state.messages.append({"role": "user", "content": query_text})
 
         result = rag_core_pipeline(query_text, win_host, st.session_state.collection)
 
