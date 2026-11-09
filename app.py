@@ -4,7 +4,7 @@ import streamlit as st
 import chromadb
 import requests
 
-from src.config import setup_environment, DB_DIR, CLEANED_MD_PATH
+from src.config import setup_environment, DB_DIR, CLEANED_MD_PATH, INFERENCE_MODEL, EMBEDDING_MODEL, TOP_K, CHUNK_OVERLAP, CHUNK_SIZE
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection, build_index
 from src.rag.core import rag_core_pipeline
 from src.rag.output import save_experiment_result
@@ -22,7 +22,7 @@ def main():
     chroma_collection = get_or_create_chroma_collection(chroma_client)
 
     if "collection" not in st.session_state:
-        st.session_state.collection = get_or_create_chroma_collection
+        st.session_state.collection = get_or_create_chroma_collection(chroma_client)
     
     win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
 
@@ -53,7 +53,7 @@ def main():
     if query_text:
 
         with st.chat_message("user"):
-            st.write(prompt)
+            st.write(query_text)
 
         result = rag_core_pipeline(query_text, win_host, st.session_state.collection)
 
@@ -61,6 +61,21 @@ def main():
         with st.chat_message('assistant'):
             st.write(f"RAGの結果: {result["retrieved_contexts"]}")
 
+        evaluation_dataset = [{
+            "execution_mode": "streamlit",
+            "question_id": None,
+            "category": None,
+            "question": query_text,
+            "ground_truth": None,
+            "ideal_chunks": [
+                {
+                "chunk_text": None, 
+                },
+                {
+                "chunk_text": None,
+                }
+            ]
+        }]
         params = {
             "embedding_model": EMBEDDING_MODEL,
             "inference_model": INFERENCE_MODEL,
@@ -71,7 +86,7 @@ def main():
             },
             "top_k": TOP_K
         }
-        save_experiment_result(evaluation_dataset, results, params)
+        save_experiment_result(evaluation_dataset, [result], params)
  
         with st.chat_message("assistant"):
             st.write(result["response_text"])
