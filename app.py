@@ -63,9 +63,10 @@ def main():
 
         result = rag_core_pipeline(query_text, win_host, st.session_state.collection)
 
-        print(f"RAGの結果: {result}")
-        with st.chat_message('assistant'):
-            st.write(f"RAGの結果: {result["retrieved_contexts"]}")
+        logger.debug(f"RAGの結果: {result}")
+        # 検索チャンクを画面に表示する？
+        #with st.chat_message('assistant'):
+        #    st.write(f"RAGの結果: {result["retrieved_contexts"]}")
 
         evaluation_dataset = [{
             "execution_mode": "streamlit",
