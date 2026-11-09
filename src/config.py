@@ -34,6 +34,8 @@ GEMINI_API_KEY_FREE = os.getenv('GEMINI_API_KEY_FREE')
 # モデルの指定
 EMBEDDING_MODEL = "nomic-embed-text"
 INFERENCE_MODEL = "gemini-3.5-flash-lite"
+
+# 検索関連のパラメータ
 TOP_K = 3
 
 # 固定チャンク長のときのチャンク関連のパラメータ
