@@ -11,9 +11,7 @@ logger.setLevel(DEBUG)
 
 def main():
 
-    # TODO: src.config から Path を import すべき
-    # TODO: convert_pdf_to_md() は convert と cleaning に分割すべき
-    convert_pdf_to_md(Path("data/raw_pdf/telework_guide.pdf"), Path("data/raw_md/telework_guide.md"), Path("data/cleaned_md/telework_guide.md"))
+    logger.debug("raw PDF -> raw Markdownの変換を実行します……")
     convert_pdf_to_md(RAW_PDF_DIR / (TARGET_DOCUMENT_NAME + ".pdf"), RAW_MD_DIR / (TARGET_DOCUMENT_NAME + ".md"))
     logger.debug("完了: raw PDF -> raw Markdownの変換")
 

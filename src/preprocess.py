@@ -2,7 +2,7 @@ import os
 from logging import DEBUG, getLogger
 from pathlib import Path
 
-from config import PREPROCESS_PROMPT_DIR, CLEANING_MODEL
+from src.config import PREPROCESS_PROMPT_DIR, CLEANING_MODEL
 
 import pymupdf4llm
 from dotenv import load_dotenv
