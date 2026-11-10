@@ -9,9 +9,6 @@ setup_environment()
 
 if __name__ == "__main__":
     # 埋め込みベクトル作成用の Ollama 起動のための情報を取得
-    # 自宅用（自分のPC）
-    #win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
-    # 事業所用（貸与PC)
     win_host = get_win_host()
 
     # インデックス作成
