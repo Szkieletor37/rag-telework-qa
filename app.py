@@ -5,6 +5,7 @@ import chromadb
 import requests
 
 from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME, INFERENCE_MODEL, EMBEDDING_MODEL, TOP_K, CHUNK_OVERLAP, CHUNK_SIZE
+from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection, build_index
 from src.rag.core import rag_core_pipeline
 from src.rag.output import save_experiment_result
@@ -24,7 +25,7 @@ def main():
     if "collection" not in st.session_state:
         st.session_state.collection = get_or_create_chroma_collection(chroma_client)
     
-    win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
+    win_host = get_win_host()
 
     # タイトル
     st.set_page_config(page_title="Local LLM Chat")

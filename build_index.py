@@ -1,16 +1,11 @@
 import subprocess
 
 from src.config import setup_environment, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME
+from src.utils import get_win_host
 from src.rag.vector_store import build_index
 
 
 setup_environment()
-
-def get_win_host():
-    # WSLから見たデフォルトゲートウェイ（Windows側ホスト）のIPを取得
-    route_output = subprocess.getoutput("ip route show | grep default | awk '{print $3}'").strip()
-    return route_output
-
 
 if __name__ == "__main__":
     # 埋め込みベクトル作成用の Ollama 起動のための情報を取得

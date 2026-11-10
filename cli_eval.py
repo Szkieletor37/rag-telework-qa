@@ -12,6 +12,7 @@ import yaml
 from tqdm import tqdm
 
 from src.config import setup_environment, DB_DIR, TOP_K, EMBEDDING_MODEL, INFERENCE_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
+from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
 from src.rag.core import rag_core_pipeline
 from src.rag.output import save_experiment_result
@@ -45,7 +46,7 @@ def cli_eval() -> Any:
     logger.debug(evaluation_dataset)
 
     # 埋め込みベクトル作成用の Ollama 起動のための情報を取得
-    win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
+    win_host = get_win_host()
     logger.debug(win_host)
 
     # 1問ずつ rag_core_pipeline() に渡す
