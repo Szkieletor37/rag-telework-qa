@@ -4,7 +4,7 @@ import streamlit as st
 import chromadb
 import requests
 
-from src.config import setup_environment, DB_DIR, CLEANED_MD_PATH, INFERENCE_MODEL, EMBEDDING_MODEL, TOP_K, CHUNK_OVERLAP, CHUNK_SIZE
+from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME, INFERENCE_MODEL, EMBEDDING_MODEL, TOP_K, CHUNK_OVERLAP, CHUNK_SIZE
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection, build_index
 from src.rag.core import rag_core_pipeline
 from src.rag.output import save_experiment_result
@@ -33,7 +33,7 @@ def main():
     st.sidebar.title("設定")
 
     if st.sidebar.button("インデックス作成"):
-        build_index(win_host, md_path=CLEANED_MD_PATH)
+        build_index(win_host, md_path=(CLEANED_MD_DIR / (TARGET_DOCUMENT_NAME + ".md")))
 
         st.sidebar.success("インデックス作成完了")
 
