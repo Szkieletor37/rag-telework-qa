@@ -44,7 +44,6 @@ def build_inference_prompt(prompt_template: str, query_text: str, retrieved_chun
     return template.render(
         query_text=query_text,
         documents_section=documents_section
-
     )
 
 def generate_answer(inference_prompt: str, inference_model: Any)->Any:
