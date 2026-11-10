@@ -19,6 +19,7 @@ QUESTION_DIR = DATA_DIR / "question"
 RESULTS_DIR = DATA_DIR / "results"
 PROMPTS_DIR = PROJECT_ROOT / "prompts"
 INFERENCE_PROMPT_DIR = PROMPTS_DIR / "inference"
+PREPROCESS_PROMPT_DIR = PROMPTS_DIR / "preprocess"
 
 # ターゲット資料のファイル名
 # 一部はソースコードのどこかでハードコードされているはず。要修正
@@ -36,6 +37,7 @@ GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GEMINI_API_KEY_FREE = os.getenv('GEMINI_API_KEY_FREE')
 
 # モデルの指定
+CLEANING_MODEL = "gemini-3.6-flash"
 EMBEDDING_MODEL = "nomic-embed-text"
 INFERENCE_MODEL = "gemini-3.5-flash-lite"
 
