@@ -20,14 +20,16 @@ RESULTS_DIR = DATA_DIR / "results"
 PROMPTS_DIR = PROJECT_ROOT / "prompts"
 INFERENCE_PROMPT_DIR = PROMPTS_DIR / "inference"
 
+# ターゲット資料のファイル名
+# 一部はソースコードのどこかでハードコードされているはず。要修正
+# もし、ファイルをアップロード可能にする場合は動的に命名するように変更する
+TARGET_DOCUMENT_NAME = "telework_guide"
+
 # DBのパスの定義
 DB_DIR = PROJECT_ROOT / "chroma_db"
 
 # 推論用プロンプトファイルのパス
 INFERENCE_PROMPT_PATH = INFERENCE_PROMPT_DIR / "prompt_template.md"
-
-# 検索用資料のパス
-CLEANED_MD_DIR / "telework_guide.md"
 
 # 環境変数
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
