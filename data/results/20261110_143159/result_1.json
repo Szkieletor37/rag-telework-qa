@@ -1,0 +1,29 @@
+{
+  "execution_mode": "streamlit",
+  "question_id": null,
+  "category": null,
+  "question": "テレワーク状況下における人材育成のポイントは？",
+  "ground_truth": null,
+  "ideal_chunks": [
+    {
+      "chunk_text": null
+    },
+    {
+      "chunk_text": null
+    }
+  ],
+  "response_text": "参照ドキュメントによると、テレワーク状況下における人材育成のポイントは以下の通りです。\n\n* 社内教育等をオンラインで実施することも有効であること。\n* オンラインならではの利点を活用すること（例：「他の社員の営業の姿を大人数の後輩社員がオンラインで見て学ぶ」「動画にしていつでも学べるようにする」など）。",
+  "retrieved_contexts": [
+    "publication/pamph/pdf/0020012-080.pdf\n\n### 【3】 テレワーク状況下における人材育成のポイント\n\nテレワークを推進する上で、社内教育等についてもオンラインで実施することも有効です。オンラインでの人材育成は、例えば、「他の社員の営業の姿を大人数の後輩社員がオンラインで見て学ぶ」「動画にしていつでも学べるようにする」等の、オンラインならではの利点を持っているた",
+    "または、以下の順番に選択しても、ご参照いただけます。\nホーム ＞ 政策について ＞ 分野別の政策一覧 ＞ 雇用・労働 ＞ 労働基準 ＞ 施策情報 ＞ 仕事と生活の調和 ＞ 施策紹介 ＞ テレワーク普及促進関連事業 ＞ 雇用環境・均等 ＞ 施策情報 ＞ テレワーク・フリーランス・家内労働＞ テレワーク普及促進関連事業\n\n### ● 人材確保等支援助成金（テレワークコース）\n良質なテレワークを新規導入",
+    "普及促進関連事業\n\n### ● 人材確保等支援助成金（テレワークコース）\n良質なテレワークを新規導入・実施することにより、労働者の人材確保や雇用管理改善等の観点から効果をあげた中小企業事業主が助成対象となります。\n- URL: https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/telework_zyosei_R3.html\n\n### ● テレワーク総"
+  ],
+  "embedding_model": "nomic-embed-text",
+  "inference_model": "gemini-3.5-flash-lite",
+  "chunking_strategy": "fixed_size",
+  "chunking_params": {
+    "chunk_size": 200,
+    "chunk_overlap": 50
+  },
+  "top_k": 3
+}
