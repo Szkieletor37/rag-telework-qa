@@ -6,10 +6,18 @@ from src.rag.vector_store import build_index
 
 setup_environment()
 
+def get_win_host():
+    # WSLから見たデフォルトゲートウェイ（Windows側ホスト）のIPを取得
+    route_output = subprocess.getoutput("ip route show | grep default | awk '{print $3}'").strip()
+    return route_output
+
 
 if __name__ == "__main__":
     # 埋め込みベクトル作成用の Ollama 起動のための情報を取得
-    win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
+    # 自宅用（自分のPC）
+    #win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
+    # 事業所用（貸与PC)
+    win_host = get_win_host()
 
     # インデックス作成
     build_index(win_host, md_path=(CLEANED_MD_DIR / (TARGET_DOCUMENT_NAME + ".md")))
