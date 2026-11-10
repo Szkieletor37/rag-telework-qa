@@ -2,7 +2,7 @@ from logging import DEBUG, basicConfig, getLogger
 from pathlib import Path
 
 from src.config import setup_environment, RAW_MD_DIR, RAW_PDF_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME
-from src.preprocess import convert_pdf_to_md
+from src.preprocess import convert_pdf_to_md, clean_markdown
 
 setup_environment()
 
