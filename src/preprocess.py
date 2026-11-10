@@ -55,7 +55,8 @@ def clean_markdown(raw_md_path: Path, cleaned_md_path: Path) -> None:
 
     raw_md_content = raw_md_path.read_text(encoding="utf-8")
 
-    prompt = build_cleaning_prompt(PREPROCESS_PROMPT_DIR / "cleaning_template.md", raw_md_content)
+    cleaning_prompt_template = (PREPROCESS_PROMPT_DIR / "cleaning_template.md").read_text(encoding="utf-8")
+    prompt = build_cleaning_prompt(cleaning_prompt_template, raw_md_content)
 
     # token数のカウント
     total_tokens = client.models.count_tokens(
