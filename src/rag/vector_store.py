@@ -61,14 +61,13 @@ def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, m
         logger.debug(f"注意: デバッグ用に、資料のチャンク数は{DEBUG_CHUNK_LEN_LIMIT}に制限しています")
 
 
-    for i, item in enumerate(chunks):
-            logger.debug(f"--- チャンク No.{i} ---")
-            logger.debug(item)
+    #for i, item in enumerate(chunks):
+            #logger.debug(f"--- チャンク No.{i} ---")
+            #logger.debug(item)
     logger.debug("完了: チャンクの分割")
     logger.debug(f"\t チャンク数: {len(chunks)}")
 
     # 各チャンクごとに処理
-    # TODO: tqdm で進捗バーを表示できると便利
     for i, chunk in enumerate(tqdm(chunks)):
 
         logger.debug(f"--- チャンク No.{i}を処理 ---")
