@@ -1,6 +1,6 @@
 import subprocess
 
-from src.config import setup_environment, CLEANED_MD_PATH
+from src.config import setup_environment, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME
 from src.rag.vector_store import build_index
 
 
@@ -12,4 +12,4 @@ if __name__ == "__main__":
     win_host = subprocess.getoutput("hostname.exe").strip() + ".local"
 
     # インデックス作成
-    build_index(win_host, md_path=CLEANED_MD_PATH)
+    build_index(win_host, md_path=(CLEANED_MD_DIR / (TARGET_DOCUMENT_NAME + ".md")))
