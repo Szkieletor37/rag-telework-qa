@@ -12,6 +12,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 # 各ディレクトリの定義
 DATA_DIR = PROJECT_ROOT / "data"
+RAW_PDF_DIR = DATA_DIR / "raw_pdf"
+RAW_MD_DIR = DATA_DIR / "raw_md"
 CLEANED_MD_DIR = DATA_DIR / "cleaned_md"
 QUESTION_DIR = DATA_DIR / "question"
 RESULTS_DIR = DATA_DIR / "results"
@@ -25,7 +27,7 @@ DB_DIR = PROJECT_ROOT / "chroma_db"
 INFERENCE_PROMPT_PATH = INFERENCE_PROMPT_DIR / "prompt_template.md"
 
 # 検索用資料のパス
-CLEANED_MD_PATH = Path("./data/cleaned_md/telework_guide.md")
+CLEANED_MD_DIR / "telework_guide.md"
 
 # 環境変数
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
