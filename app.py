@@ -4,7 +4,7 @@ import streamlit as st
 import chromadb
 import requests
 
-from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME, INFERENCE_MODEL, EMBEDDING_MODEL, TOP_K, CHUNK_OVERLAP, CHUNK_SIZE
+from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME, get_default_config
 from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection, build_index
 from src.rag.core import rag_core_pipeline
@@ -17,6 +17,8 @@ logger.setLevel(DEBUG)
 
 
 def main():
+
+    config = get_default_config()
 
     chroma_client = init_chroma_client(DB_DIR)
 
@@ -53,16 +55,16 @@ def main():
         with st.chat_message(m["role"]):
             st.write(m["content"])
 
-    query_text = st.chat_input("メッセージを入力")
+    user_query_text = st.chat_input("メッセージを入力")
 
-    if query_text:
+    if user_query_text:
 
         with st.chat_message("user"):
-            st.write(query_text)
+            st.write(user_query_text)
 
-        st.session_state.messages.append({"role": "user", "content": query_text})
+        st.session_state.messages.append({"role": "user", "content": user_query_text})
 
-        result = rag_core_pipeline(query_text, win_host, st.session_state.collection)
+        result = rag_core_pipeline(user_query_text, win_host, st.session_state.collection)
 
         logger.debug(f"RAGの結果: {result}")
         # 検索チャンクを画面に表示する？
@@ -73,7 +75,7 @@ def main():
             "execution_mode": "streamlit",
             "question_id": None,
             "category": None,
-            "question": query_text,
+            "question": user_query_text,
             "ground_truth": None,
             "ideal_chunks": [
                 {
@@ -84,17 +86,8 @@ def main():
                 }
             ]
         }]
-        params = {
-            "embedding_model": EMBEDDING_MODEL,
-            "inference_model": INFERENCE_MODEL,
-            "chunking_strategy": "fixed_size",
-            "chunking_params": {
-                "chunk_size": CHUNK_SIZE,
-                "chunk_overlap": CHUNK_OVERLAP,
-            },
-            "top_k": TOP_K
-        }
-        save_experiment_result(evaluation_dataset, [result], params)
+
+        save_experiment_result(evaluation_dataset, [result], config)
  
         with st.chat_message("assistant"):
             st.write(result["response_text"])
