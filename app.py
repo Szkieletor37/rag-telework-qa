@@ -25,7 +25,7 @@ def main():
     chroma_collection = get_or_create_chroma_collection(chroma_client)
 
     if "collection" not in st.session_state:
-        st.session_state.collection = get_or_create_chroma_collection(chroma_client)
+        st.session_state.collection = chroma_collection
     
     win_host = get_win_host()
 
