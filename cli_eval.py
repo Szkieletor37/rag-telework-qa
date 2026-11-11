@@ -11,7 +11,7 @@ import yaml
 
 from tqdm import tqdm
 
-from src.config import setup_environment, DB_DIR, TOP_K, EMBEDDING_MODEL, INFERENCE_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
+from src.config import setup_environment, DB_DIR, TOP_K, EMBEDDING_MODEL, INFERENCE_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, get_default_config
 from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
 from src.rag.core import rag_core_pipeline
@@ -33,6 +33,8 @@ def load_yaml(yaml_path: Path) -> Any:
 
 def cli_eval() -> Any:
     """CLIでYAMLファイルの質問を読み込み、1問ずつRAGに処理させて回答を保存する関数"""
+
+    config = get_default_config()
     #args = make_parser().parse_args(argv)
 
     logger.debug("cli_eval()の処理を開始します……")
@@ -63,17 +65,7 @@ def cli_eval() -> Any:
         result = rag_core_pipeline(query_text, win_host, chroma_collection)
         results.append(result)
 
-    params = {
-        "embedding_model": EMBEDDING_MODEL,
-        "inference_model": INFERENCE_MODEL,
-        "chunking_strategy": "fixed_size",
-        "chunking_params": {
-            "chunk_size": CHUNK_SIZE,
-            "chunk_overlap": CHUNK_OVERLAP,
-        },
-        "top_k": TOP_K
-    }
-    save_experiment_result(evaluation_dataset, results, params)
+    save_experiment_result(evaluation_dataset, results, config)
         
 
 
