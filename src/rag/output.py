@@ -25,8 +25,8 @@ def save_experiment_result(evaluation_dataset: Any, results: Any, config: Any) -
 
         data = {
             "metadata": "",
-            "results": [question_entry | result],
-            "config": config
+            "config": config,
+            "results": [question_entry | result]
         }
 
         # 出力ファイル名は 1-index にする
