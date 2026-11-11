@@ -1,28 +1,56 @@
 {
-  "experiment_id": "exp_001",
-  "created_at": "2026-08-24T15:30:00",
+  "metadata": {
+    "experiment_id": "exp_19990101_120000",
+    "created_at": "1999-01-01T12:00:00+09:00",
+    "execution_source": "streamlit",
+    "description":"chunk_sizeの違いによる回答精度の比較実験"
+  },
   "config": {
-    "chunk_size": 500,
-    "chunk_overlap": 50,
-    "embedding_model": "text-embedding-3-small",
-    "llm_model": "gemini-1.5-flash",
-    "top_k": 5
+    "inference_model": {
+      "name": "gemini-3.5-flash-lite",
+      "temperature": 0.0
+    },
+    "chunking": {
+      "strategy": "fixed_size",
+      "params": {
+        "chunk_size": 200,
+        "chunk_overlap": 50
+      }
+    },
+    "retrieval": {
+      "top_k": 3,
+      "embedding_model": "nomic-embed-text"
+    },
+    "prompt": {
+      "template_id": "prompt_v2",
+      "template_hash": "e3b0c442...",
+      "system_prompt": "# 前提条件\nあなたはチャットボットAIです。以下の「参照ドキュメント」のみを使用して「ユーザーの質問」に回答してください。\n\n{{ document }}..."
+    }
   },
   "results": [
     {
-      "question_id": 1,
-      "category": "Multi-Hop",
-      "question": "テレワーク導入時の費用補助条件と...",
-      "ground_truth": "費用補助の条件は〜〜",
-      "retrieved_chunks": [
+      "question_id": "q_001",
+      "category": "",
+      "question": "職場における労働者の安全と健康の確保について、テレワークの場合は事業者の義務が免除されますか？",
+      "ground_truth": "免除されません。事業者は、テレワークの場合であっても、労働者の安全と健康確保の措置を講ずる義務があります。",
+      "ideal_source": [
         {
-          "rank": 1,
-          "score": 0.85,
-          "chunk_id": "doc_01_c003",
-          "chunk_text": "費用は、ねこを飼っていると..."
+          "source": "telework_guide.md",
+          "text": "### 【1】 安全衛生関係法令の適用と規定遵守の必要性\n\n労働安全衛生法等の関係法令等においては、安全衛生管理体制を確立し、職場における労働者の安全と健康を確保するために必要となる具体的な措置を講ずることを事業者に求めています。自宅等においてテレワークを実施する場合においても、事業者は、これら関係法令等に基づき、労働者の<u>安全と健康の確保のための措置を講ずる必要があります。</u>"
         }
       ],
-      "generated_answer": "LLMが出力した回答文章..."
+      "rendered_prompt": "# 前提条件\nあなたはチャットボットAIです。以下の「参照ドキュメント」のみを使用して「ユーザーの質問」に回答してください。\n\nにテレワーク作業時の安全衛生や健康確保に...",
+      "thought_process": "## 思考過程\n1. **ユーザーの質問の確認**: 「職場における労働者の安全と健康の確保について...",
+      "generated_answer": "参照ドキュメントによると、自宅等においてテレワークを実施する場合においても、事業者は関係法令等に基づき、労働者の安全と健康の確保のための措置を講ずる必要があります。したがって、テレワークの場合でも事業者の義務は免除されません。",
+      "retrieved_contexts": [
+        {
+          "chunk_id": "chunk_042",
+          "rank": 1,
+          "score": 0.89,
+          "source": "telework_guide.md",
+          "text": "にテレワーク作業時の安全衛生や健康確保に関する事項を含めているか。 | ◎ |\n| | (2) 作業内容変更時教育 | |\n| | テレワークを初めて行わせる労働者に対し、作業内容変更時の安全衛生教育を実施し、テレワーク作業時の安全衛生や健康確保に関する事項を教育しているか。※作業内容に大幅な変更が生じる場合には、必ず実施してください。 | ◎ |\n| | (3) テレワーク中の労働者に対する安全"
+        }
+      ]
     }
   ]
 }
