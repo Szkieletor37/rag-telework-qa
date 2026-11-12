@@ -35,7 +35,7 @@ def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
 
     # 各要素は2重リストになっている
     # 現在の実装だと 1 query() あたり1個のみembeddingを渡しているので range(0)
-    for i in range(0):
+    for i in range(1):
 
         # rank は 1-index にする
         for j, id in enumerate(retrieved_chunks["ids"][i]):
@@ -51,8 +51,10 @@ def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
 def build_inference_prompt(prompt_template: str, query_text: str, retrieved_contexts: Any)->Any:
     """テンプレートプロンプト、質問文、検索結果から、推論用プロンプトを組み立てる関数"""
 
+    logger.debug(retrieved_contexts)
+
     documents_section = "\n".join(
-        f"- [Doc {i}]\n{retrieved_context[i-1]["text"]}" for i, retrieved_context in enumerate(retrieved_contexts, start=1)
+        f"- [Doc {i+1}]\n{retrieved_context["text"]}" for i, retrieved_context in enumerate(retrieved_contexts)
     )
 
     template = Template(prompt_template)
@@ -112,16 +114,17 @@ def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any)->A
 
     # 推論させるためのプロンプトを組み立てる
     inference_prompt_template = INFERENCE_PROMPT_PATH.read_text(encoding="utf-8")
-    inference_prompt = build_inference_prompt(inference_prompt_template, query_text, retrieved_contexts)
+    inference_prompt_rendered = build_inference_prompt(inference_prompt_template, query_text, retrieved_contexts)
 
     logger.debug("推論用プロンプト:")
-    logger.debug(inference_prompt)
+    logger.debug(inference_prompt_rendered)
 
     # モデルに検索結果を渡し、推論させる
-    response_text = generate_answer(inference_prompt, inference_model=INFERENCE_MODEL)
+    response_text = generate_answer(inference_prompt_rendered, inference_model=INFERENCE_MODEL)
     logger.debug(response_text)
 
     result = {
+        "rendered_prompt": inference_prompt_rendered,
         "response_text": response_text,
         "retrieved_contexts": retrieved_contexts
     }
