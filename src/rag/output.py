@@ -45,7 +45,7 @@ def save_experiment_result(evaluation_dataset: Any, results: Any, metadata: Any,
         }
 
         # 出力ファイル名は 1-index にする
-        file_path = dir_path / f"result_{i+1}.json"
+        file_path = dir_path / f"result_{question_entry["question_id"]}.json"
 
         with open(file_path, "w", encoding="utf-8") as f:
             json.dump(
