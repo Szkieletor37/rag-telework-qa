@@ -33,23 +33,26 @@ def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
 
     retrieved_contexts = []
 
-    # rank は 1-index にする
-    for i, id in enumerate(retrieved_chunks["ids"], start=1):
-        retrieved_contexts.append({
-            "chunk_id": id,
-            "rank": i,
-            "score": retrieved_chunks["distances"][i], 
-            "text": retrieved_chunks["documents"][i]
-        })
+    # 各要素は2重リストになっている
+    # 現在の実装だと 1 query() あたり1個のみembeddingを渡しているので range(0)
+    for i in range(0):
 
-    # 返り値は2重リストだよ
+        # rank は 1-index にする
+        for j, id in enumerate(retrieved_chunks["ids"][i]):
+            retrieved_contexts.append({
+                "chunk_id": id,
+                "rank": j+1,
+                "score": retrieved_chunks["distances"][i][j], 
+                "text": retrieved_chunks["documents"][i][j]
+            })
+
     return retrieved_contexts
 
-def build_inference_prompt(prompt_template: str, query_text: str, retrieved_chunks: Any)->Any:
+def build_inference_prompt(prompt_template: str, query_text: str, retrieved_contexts: Any)->Any:
     """テンプレートプロンプト、質問文、検索結果から、推論用プロンプトを組み立てる関数"""
 
     documents_section = "\n".join(
-        f"- [Doc {i + 1}]\n{doc}" for i, doc in enumerate(retrieved_chunks)
+        f"- [Doc {i}]\n{retrieved_context[i-1]["text"]}" for i, retrieved_context in enumerate(retrieved_contexts, start=1)
     )
 
     template = Template(prompt_template)
