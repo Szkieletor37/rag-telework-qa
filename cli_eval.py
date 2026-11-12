@@ -15,7 +15,7 @@ from src.config import setup_environment, DB_DIR, TOP_K, EMBEDDING_MODEL, INFERE
 from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
 from src.rag.core import rag_core_pipeline
-from src.rag.output import save_experiment_result
+from src.rag.output import save_experiment_result, generate_metadata
 
 setup_environment()
 
@@ -65,7 +65,9 @@ def cli_eval() -> Any:
         result = rag_core_pipeline(query_text, win_host, chroma_collection)
         results.append(result)
 
-    save_experiment_result(evaluation_dataset, results, config)
+    metadata = generate_metadata(execution_source="cli")
+
+    save_experiment_result(evaluation_dataset, results, metadata, config)
         
 
 
