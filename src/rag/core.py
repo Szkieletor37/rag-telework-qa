@@ -5,6 +5,7 @@ RAGの主要な処理（生成、検索、保存）を行うモジュール
 from logging import DEBUG, getLogger
 from pathlib import Path
 from typing import Any
+import re
 
 from src.config import EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY, TOP_K, INFERENCE_PROMPT_PATH
 from src.rag.vector_store import get_embeddings
@@ -64,12 +65,23 @@ def build_inference_prompt(prompt_template: str, query_text: str, retrieved_cont
         documents_section=documents_section
     )
 
+def parse_llm_response(raw_response: str):
+    """モデルの推論回答をXMLタグで parse する関数"""
+
+    thought_match = re.search(r"<thought>(.*?)</thought>", raw_response, re.DOTALL)
+    answer_match = re.search(r"<answer>(.*?)</answer>", raw_response, re.DOTALL)
+
+    thought_process = thought_match.group(1).strip() if thought_match else ""
+    generated_answer = answer_match.group(1).strip() if answer_match else raw_response
+
+    return thought_process, generated_answer
+
 def generate_answer(inference_prompt: str, inference_model: Any)->Any:
     """modelに回答を生成させる関数"""
 
     client = genai.Client(api_key=GEMINI_API_KEY)
 
-    response = client.models.generate_content(
+    raw_response = client.models.generate_content(
         model=inference_model,
         contents=inference_prompt,
         config=GenerateContentConfig(
@@ -80,12 +92,14 @@ def generate_answer(inference_prompt: str, inference_model: Any)->Any:
 
     logger.debug(
         f"""使用token: 
-        prompt:  {response.usage_metadata.prompt_token_count}
-        response:{response.usage_metadata.candidates_token_count}
-        total:   {response.usage_metadata.total_token_count}"""
+        prompt:  {raw_response.usage_metadata.prompt_token_count}
+        response:{raw_response.usage_metadata.candidates_token_count}
+        total:   {raw_response.usage_metadata.total_token_count}"""
     )
 
-    return response.text
+    thought_process, generated_answer = parse_llm_response(raw_response)
+
+    return thought_process, generated_answer
 
 
 def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any)->Any:
@@ -120,12 +134,12 @@ def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any)->A
     logger.debug(inference_prompt_rendered)
 
     # モデルに検索結果を渡し、推論させる
-    response_text = generate_answer(inference_prompt_rendered, inference_model=INFERENCE_MODEL)
-    logger.debug(response_text)
+    thought_process, generated_answer = generate_answer(inference_prompt_rendered, inference_model=INFERENCE_MODEL)
 
     result = {
         "rendered_prompt": inference_prompt_rendered,
-        "response_text": response_text,
+        "thought_process": thought_process,
+        "generated_answer": generated_answer,
         "retrieved_contexts": retrieved_contexts
     }
 
