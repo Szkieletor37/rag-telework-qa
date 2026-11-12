@@ -1,15 +1,15 @@
-- question_id: 1
+- question_id: "test_001"
   category: "test"
-  question: "テレワークの対象業務選定時の留意点を教えてください。"
-  ground_truth: ""
-  ideal_chunks:
-    - chunk_text: ""
-    - chunk_text: ""
+  question: "職場における労働者の安全と健康の確保について、テレワークの場合は事業者の義務が免除されますか？"
+  ground_truth: "免除されません。事業者は、テレワークの場合であっても、労働者の安全と健康確保の措置を講ずる義務があります。"
+  ideal_source:
+    - source: "telework_guide.md"
+      text: "### 【1】 安全衛生関係法令の適用と規定遵守の必要性\n\n労働安全衛生法等の関係法令等においては、安全衛生管理体制を確立し、職場における労働者の安全と健康を確保するために必要となる具体的な措置を講ずることを事業者に求めています。自宅等においてテレワークを実施する場合においても、事業者は、これら関係法令等に基づき、労働者の<u>安全と健康の確保のための措置を講ずる必要があります。</u>"
 
-- question_id: 2
+- question_id: "test_002"
   category: "test"
   question: "テレワークの推進に当たってのポイントについて教えてください。"
   ground_truth: ""
-  ideal_chunks:
-    - chunk_text: ""
-    - chunk_text: ""
+  ideal_source:
+    - source: ""
+      text: ""
