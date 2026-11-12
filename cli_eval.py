@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 import yaml
 
-from src.config import setup_environment, DB_DIR, get_default_config
+from src.config import setup_environment, DB_DIR, QUESTION_DIR, get_default_config
 from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
 from src.rag.core import rag_core_pipeline
@@ -41,7 +41,7 @@ def cli_eval() -> Any:
     chroma_collection = get_or_create_chroma_collection(chroma_client)
 
     #queries = load_yaml(args.yaml)
-    evaluation_dataset = load_yaml(Path("./data/question/test.yaml"))
+    evaluation_dataset = load_yaml(QUESTION_DIR / "simple.yaml")
     logger.debug(evaluation_dataset)
 
     # 埋め込みベクトル作成用の Ollama 起動のための情報を取得
