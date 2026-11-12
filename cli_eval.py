@@ -5,13 +5,10 @@ cliからYAMLファイルを読み込み、質問を送付して回答を受け�
 import argparse
 from logging import getLogger, DEBUG
 from pathlib import Path
-import subprocess
 from typing import Any
 import yaml
 
-from tqdm import tqdm
-
-from src.config import setup_environment, DB_DIR, TOP_K, EMBEDDING_MODEL, INFERENCE_MODEL, CHUNK_SIZE, CHUNK_OVERLAP, get_default_config
+from src.config import setup_environment, DB_DIR, get_default_config
 from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
 from src.rag.core import rag_core_pipeline
