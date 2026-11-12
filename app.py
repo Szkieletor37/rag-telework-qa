@@ -8,7 +8,7 @@ from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMEN
 from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection, build_index
 from src.rag.core import rag_core_pipeline
-from src.rag.output import save_experiment_result
+from src.rag.output import save_experiment_result, generate_metadata
 
 setup_environment()
 
@@ -71,23 +71,20 @@ def main():
         #with st.chat_message('assistant'):
         #    st.write(f"RAGの結果: {result["retrieved_contexts"]}")
 
+        metadata = generate_metadata(execution_source="streamlit", description="test")
+
         evaluation_dataset = [{
-            "execution_mode": "streamlit",
             "question_id": None,
             "category": None,
             "question": user_query_text,
             "ground_truth": None,
-            "ideal_chunks": [
-                {
-                "chunk_text": None, 
-                },
-                {
-                "chunk_text": None,
-                }
-            ]
+            "ideal_source": [{
+                "source": None,
+                "text": None,
+            }]
         }]
 
-        save_experiment_result(evaluation_dataset, [result], config)
+        save_experiment_result(evaluation_dataset, [result], metadata, config)
  
         with st.chat_message("assistant"):
             st.write(result["response_text"])
