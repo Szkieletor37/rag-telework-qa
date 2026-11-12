@@ -97,7 +97,7 @@ def generate_answer(inference_prompt: str, inference_model: Any)->Any:
         total:   {raw_response.usage_metadata.total_token_count}"""
     )
 
-    thought_process, generated_answer = parse_llm_response(raw_response)
+    thought_process, generated_answer = parse_llm_response(raw_response.text)
 
     return thought_process, generated_answer
 
