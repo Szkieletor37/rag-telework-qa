@@ -29,8 +29,21 @@ def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
         n_results=top_k
     )
 
+    logger.debug(retrieved_chunks)
+
+    retrieved_contexts = []
+
+    # rank は 1-index にする
+    for i, id in enumerate(retrieved_chunks["ids"], start=1):
+        retrieved_contexts.append({
+            "chunk_id": id,
+            "rank": i,
+            "score": retrieved_chunks["distances"][i], 
+            "text": retrieved_chunks["documents"][i]
+        })
+
     # 返り値は2重リストだよ
-    return retrieved_chunks["documents"]
+    return retrieved_contexts
 
 def build_inference_prompt(prompt_template: str, query_text: str, retrieved_chunks: Any)->Any:
     """テンプレートプロンプト、質問文、検索結果から、推論用プロンプトを組み立てる関数"""
@@ -93,9 +106,6 @@ def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any)->A
 
     # 順位は 1-index で確認したいので i+1 にする
     logger.debug(f"retrieved_contexts: {retrieved_contexts}")
-    for i, chunk in enumerate(retrieved_contexts):
-        logger.debug(f" --- チャンク順位: {i+1}位 ---")
-        logger.debug(f"\t{chunk}")
 
     # 推論させるためのプロンプトを組み立てる
     inference_prompt_template = INFERENCE_PROMPT_PATH.read_text(encoding="utf-8")
