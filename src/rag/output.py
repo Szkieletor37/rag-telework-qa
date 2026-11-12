@@ -12,7 +12,22 @@ from src.config import RESULTS_DIR
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
 
-def save_experiment_result(evaluation_dataset: Any, results: Any, config: Any) -> None:
+def generate_metadata(execution_source: str, description="") -> dict:
+    """実験結果のメタデータを生成する関数"""
+
+    experiment_id = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("exp_%Y%m%d_%H%M%S")
+    created_at = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y-%m-%d_%H:%M:%S+09:00")
+
+    return {
+        "experiment_id": experiment_id,
+        "created_at": created_at,
+        "execution_source": execution_source,
+        "description": description
+    }
+
+
+
+def save_experiment_result(evaluation_dataset: Any, results: Any, metadata: Any, config: Any) -> None:
     """ 評価セット（質問、模範解答等）, 推論結果（検索Top-Kチャンク、回答）, パラメータを、JSONファイルとして保存する"""
 
     jst_timestamp = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d_%H%M%S")
@@ -24,7 +39,7 @@ def save_experiment_result(evaluation_dataset: Any, results: Any, config: Any) -
     for i, (question_entry, result) in enumerate(tqdm(zip(evaluation_dataset, results))):
 
         data = {
-            "metadata": "",
+            "metadata": metadata,
             "config": config,
             "results": [question_entry | result]
         }
