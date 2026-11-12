@@ -87,9 +87,9 @@ def main():
         save_experiment_result(evaluation_dataset, [result], metadata, config)
  
         with st.chat_message("assistant"):
-            st.write(result["response_text"])
+            st.write(result["generated_answer"])
         
-        st.session_state.messages.append({"role": "assistant", "content": result["response_text"]})
+        st.session_state.messages.append({"role": "assistant", "content": result})
 
 
 
