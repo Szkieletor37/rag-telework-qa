@@ -76,7 +76,7 @@ def parse_llm_response(raw_response: str):
 
     return thought_process, generated_answer
 
-def generate_answer(inference_prompt: str, inference_model: Any)->Any:
+def generate_answer(inference_prompt: str, inference_model: Any, temperature: Any)->Any:
     """modelに回答を生成させる関数"""
 
     client = genai.Client(api_key=GEMINI_API_KEY)
@@ -86,7 +86,7 @@ def generate_answer(inference_prompt: str, inference_model: Any)->Any:
         contents=inference_prompt,
         config=GenerateContentConfig(
             max_output_tokens=2000,
-            temperature=0.1
+            temperature=temperature
         )
     )
 
@@ -133,7 +133,7 @@ def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any, co
     logger.debug(inference_prompt_rendered)
 
     # モデルに検索結果を渡し、推論させる
-    thought_process, generated_answer = generate_answer(inference_prompt_rendered, inference_model=config["generation"]["model_name"])
+    thought_process, generated_answer = generate_answer(inference_prompt_rendered, config["generation"]["model_name"], config["generation"]["temperature"])
 
     result = {
         "rendered_prompt": inference_prompt_rendered,

@@ -43,7 +43,7 @@ CLEANING_MODEL = "gemini-3.6-flash"
 
 # 推論時のパラメータ
 INFERENCE_MODEL = "gemini-3.5-flash-lite"
-INFERENCE_MODEL_TEMPERATURE = 0.0
+INFERENCE_MODEL_TEMPERATURE = 0.1
 
 # 検索関連のパラメータ
 TOP_K = 3
@@ -69,7 +69,7 @@ def get_default_config() -> dict:
     return {
         "generation": {
             "model_name": INFERENCE_MODEL,
-            #"temperature": INFERENCE_MODEL_TEMPERATURE,
+            "temperature": INFERENCE_MODEL_TEMPERATURE,
             "prompt": get_prompt_metadata(INFERENCE_PROMPT_PATH)
         },
         "chunking": {
