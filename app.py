@@ -21,6 +21,8 @@ def main():
     config = get_default_config()
 
     run_options = {
+        # 
+        # Streamlit appからの実行は test として .../results/tmp/ に保存する
         "is_test": True
     }
 
@@ -88,7 +90,6 @@ def main():
             }]
         }]
 
-        # Streamlit appからの実行は .../results/tmp/ に保存する
         save_experiment_result(evaluation_dataset, [result], metadata, config, run_options)
  
         with st.chat_message("assistant"):
