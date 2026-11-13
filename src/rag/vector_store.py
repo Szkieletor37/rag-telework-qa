@@ -20,8 +20,8 @@ def split_text(md: str, indexing_config:dict):
     """
 
     if indexing_config["chunking"]["strategy"] == "fixed_size":
-        chunk_size = indexing_config["chunking"]["chunk_size"]
-        chunk_overlap = indexing_config["chunking"]["chunk_overlap"]
+        chunk_size = indexing_config["chunking"]["params"]["chunk_size"]
+        chunk_overlap = indexing_config["chunking"]["params"]["chunk_overlap"]
         chunks = []
         start = 0
         while start < len(md):
