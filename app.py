@@ -70,7 +70,7 @@ def main():
 
         st.session_state.messages.append({"role": "user", "content": user_query_text})
 
-        result = rag_core_pipeline(user_query_text, win_host, st.session_state.collection)
+        result = rag_core_pipeline(user_query_text, win_host, st.session_state.collection, config)
 
         logger.debug(f"RAGの結果: {result}")
         # 検索チャンクを画面に表示する？
