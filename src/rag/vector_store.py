@@ -102,12 +102,11 @@ def init_chroma_client(db_path: Path):
     return chroma_client
 
 
-def get_or_create_chroma_collection(chroma_client: Any, indexing_config):
+def get_or_create_chroma_collection(chroma_client: Any, collection_name: str):
     """ chroma_collection を作成または取得する関数 """
     # TODO: 本当は name をハードコードするのやめるべきで、引数で与えるべき？
-    chunking_strategy = indexing_config["chunking"]["strategy"]
     chroma_collection = chroma_client.get_or_create_collection(
-        name=f"local_md_{chunking_strategy}"
+        name=collection_name
     )
 
     return chroma_collection
@@ -126,7 +125,8 @@ def build_index(win_host: Any, md_path: Any, indexing_config: dict):
 
     #delete_chroma_collection(chroma_client)
 
-    chroma_collection = get_or_create_chroma_collection(chroma_client, indexing_config)
+    collection_name = f"local_md_{indexing_config["chunking"]["strategy"]}"
+    chroma_collection = get_or_create_chroma_collection(chroma_client, collection_name)
 
     logger.debug(chroma_collection)
     logger.debug("完了: Collection の初期化")

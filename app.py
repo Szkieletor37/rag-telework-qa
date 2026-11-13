@@ -28,7 +28,7 @@ def main():
 
     chroma_client = init_chroma_client(DB_DIR)
 
-    chroma_collection = get_or_create_chroma_collection(chroma_client)
+    chroma_collection = get_or_create_chroma_collection(chroma_client, config["retrieval"]["collection_name"])
 
     if "collection" not in st.session_state:
         st.session_state.collection = chroma_collection

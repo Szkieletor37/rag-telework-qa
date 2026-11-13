@@ -87,6 +87,7 @@ def get_generation_and_retrieval_config() -> dict:
             "prompt": get_prompt_metadata(INFERENCE_PROMPT_PATH)
         },
         "retrieval": {
+            "collection_name": "local_md_fixed_size",
             "top_k": TOP_K,
             "embedding_model": EMBEDDING_MODEL,
         },

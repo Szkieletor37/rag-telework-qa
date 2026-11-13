@@ -44,7 +44,7 @@ def cli_eval() -> Any:
 
     chroma_client = init_chroma_client(DB_DIR)
 
-    chroma_collection = get_or_create_chroma_collection(chroma_client)
+    chroma_collection = get_or_create_chroma_collection(chroma_client, config["retrieval"]["collection_name"])
 
     #queries = load_yaml(args.yaml)
     evaluation_dataset = load_yaml(QUESTION_DIR / "simple.yaml")
