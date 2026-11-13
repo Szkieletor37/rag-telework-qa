@@ -7,7 +7,7 @@ from zoneinfo import ZoneInfo
 
 from tqdm import tqdm
 
-from src.config import RESULTS_DIR
+from src.config import RESULTS_DIR, RESULTS_TMP_DIR
 
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
@@ -27,10 +27,16 @@ def generate_metadata(execution_source: str, description="") -> dict:
 
 
 
-def save_experiment_result(evaluation_dataset: Any, results: Any, metadata: Any, config: Any, save_dir: Path) -> None:
+def save_experiment_result(evaluation_dataset: Any, results: Any, metadata: Any, config: Any, run_options: dict) -> None:
     """ 評価セット（質問、模範解答等）, 推論結果（検索Top-Kチャンク、回答）, パラメータを、JSONファイルとして保存する"""
 
     jst_timestamp = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d_%H%M%S")
+
+    if run_options["is_test"]:
+        # test の場合は results/tmp/に保存し、git で追跡しない
+        save_dir = RESULTS_TMP_DIR
+    else:
+        save_dir = RESULTS_DIR
 
     dir_path = save_dir / jst_timestamp
     dir_path.mkdir(parents=True)

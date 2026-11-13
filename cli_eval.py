@@ -64,13 +64,7 @@ def cli_eval() -> Any:
 
     metadata = generate_metadata(execution_source="cli")
 
-    if run_options["is_test"]:
-        # test の場合は git で追跡しない
-        save_dir = RESULTS_TMP_DIR
-    else:
-        save_dir = RESULTS_DIR
-
-    save_experiment_result(evaluation_dataset, results, metadata, config, save_dir)
+    save_experiment_result(evaluation_dataset, results, metadata, config, run_options)
         
 
 
