@@ -10,7 +10,7 @@ import yaml
 
 from src.config import setup_environment, DB_DIR, QUESTION_DIR, get_generation_and_retrieval_config, RESULTS_DIR, RESULTS_TMP_DIR
 from src.utils import get_win_host
-from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
+from src.rag.vector_store import init_chroma_client, get_chroma_collection
 from src.rag.core import rag_core_pipeline
 from src.rag.output import save_experiment_result, generate_metadata
 
@@ -44,7 +44,11 @@ def cli_eval() -> Any:
 
     chroma_client = init_chroma_client(DB_DIR)
 
-    chroma_collection = get_or_create_chroma_collection(chroma_client, config["retrieval"]["collection_name"])
+    chroma_collection = get_chroma_collection(chroma_client, config["retrieval"]["collection_name"])
+
+    indexing_config = {
+        "indexing_config": chroma_collection.metadata
+    }
 
     #queries = load_yaml(args.yaml)
     evaluation_dataset = load_yaml(QUESTION_DIR / "simple.yaml")
@@ -63,7 +67,7 @@ def cli_eval() -> Any:
 
     metadata = generate_metadata(execution_source="cli")
 
-    save_experiment_result(evaluation_dataset, results, metadata, config, run_options)
+    save_experiment_result(evaluation_dataset, results, metadata, (config | indexing_config), run_options)
 
 
     logger.debug("完了: cli_eval()のすべての処理が完了しました。")

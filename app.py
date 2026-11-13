@@ -6,7 +6,7 @@ import requests
 
 from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME, get_generation_and_retrieval_config, RESULTS_TMP_DIR
 from src.utils import get_win_host
-from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection, build_index
+from src.rag.vector_store import init_chroma_client, get_chroma_collection, delete_chroma_collection, build_index
 from src.rag.core import rag_core_pipeline
 from src.rag.output import save_experiment_result, generate_metadata
 
@@ -28,7 +28,12 @@ def main():
 
     chroma_client = init_chroma_client(DB_DIR)
 
-    chroma_collection = get_or_create_chroma_collection(chroma_client, config["retrieval"]["collection_name"])
+    chroma_collection = get_chroma_collection(chroma_client, config["retrieval"]["collection_name"])
+
+    indexing_config = {
+        "indexing_config": chroma_collection.metadata
+    }
+    logger.debug(f"indexing_config: {indexing_config}")
 
     if "collection" not in st.session_state:
         st.session_state.collection = chroma_collection
@@ -90,7 +95,7 @@ def main():
             }]
         }]
 
-        save_experiment_result(evaluation_dataset, [result], metadata, config, run_options)
+        save_experiment_result(evaluation_dataset, [result], metadata, (config | indexing_config), run_options)
  
         with st.chat_message("assistant"):
             st.write(result["generated_answer"])

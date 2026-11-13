@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import chromadb
+from flatten_dict import flatten
 import requests
 from tqdm import tqdm
 
@@ -98,18 +99,31 @@ def init_chroma_client(db_path: Path):
     return chroma_client
 
 
-def get_or_create_chroma_collection(chroma_client: Any, collection_name: str):
-    """ chroma_collection を作成または取得する関数 """
+def create_chroma_collection(chroma_client: Any, collection_name: str, metadata: dict):
+    """chroma_collection を作成する関数"""
+
+    chroma_collection = chroma_client.get_or_create_collection(
+        name=collection_name,
+        metadata=metadata
+    )
+    logger.debug(f"CREATE: name: {collection_name}\nmetadata:{metadata}")
+
+    return chroma_collection
+
+def get_chroma_collection(chroma_client: Any, collection_name: str):
+    """chroma_collection を取得する関数"""
     chroma_collection = chroma_client.get_or_create_collection(
         name=collection_name
     )
 
+    logger.debug(f"GET: name={collection_name}\nmetadata: {chroma_collection.metadata}")
+
     return chroma_collection
 
-def delete_chroma_collection(chroma_client: Any):
+def delete_chroma_collection(chroma_client: Any, collection_name: str):
     """ chroma_collection を削除する関数"""
 
-    chroma_client.delete_collection(name="local_md")
+    chroma_client.delete_collection(name=collection_name)
 
     return
 
@@ -118,10 +132,14 @@ def build_index(win_host: Any, md_path: Any, indexing_config: dict):
     logger.debug("chroma_client の初期化を開始")
     chroma_client = init_chroma_client(db_path=DB_DIR)
 
-    #delete_chroma_collection(chroma_client)
-
     collection_name = f"local_md_{indexing_config["chunking"]["strategy"]}"
-    chroma_collection = get_or_create_chroma_collection(chroma_client, collection_name)
+
+    delete_chroma_collection(chroma_client, collection_name)
+
+    # 参照時のために metadata を付加
+    # nested dict を受け付けないので flatten する
+    metadata = flatten(indexing_config, reducer='dot')
+    chroma_collection = create_chroma_collection(chroma_client, collection_name, metadata)
 
     logger.debug(chroma_collection)
     logger.debug("完了: Collection の初期化")
