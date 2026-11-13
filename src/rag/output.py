@@ -27,12 +27,12 @@ def generate_metadata(execution_source: str, description="") -> dict:
 
 
 
-def save_experiment_result(evaluation_dataset: Any, results: Any, metadata: Any, config: Any) -> None:
+def save_experiment_result(evaluation_dataset: Any, results: Any, metadata: Any, config: Any, save_dir: Path) -> None:
     """ 評価セット（質問、模範解答等）, 推論結果（検索Top-Kチャンク、回答）, パラメータを、JSONファイルとして保存する"""
 
     jst_timestamp = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d_%H%M%S")
 
-    dir_path = RESULTS_DIR / jst_timestamp
+    dir_path = save_dir / jst_timestamp
     dir_path.mkdir(parents=True)
 
     logger.debug("実験結果のJSONファイル出力を開始します")

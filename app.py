@@ -4,7 +4,7 @@ import streamlit as st
 import chromadb
 import requests
 
-from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME, get_default_config
+from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME, get_default_config, RESULTS_TMP_DIR
 from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection, build_index
 from src.rag.core import rag_core_pipeline
@@ -84,7 +84,8 @@ def main():
             }]
         }]
 
-        save_experiment_result(evaluation_dataset, [result], metadata, config)
+        # Streamlit appからの実行は .../results/tmp/ に保存する
+        save_experiment_result(evaluation_dataset, [result], metadata, config, RESULTS_TMP_DIR)
  
         with st.chat_message("assistant"):
             st.write(result["generated_answer"])
