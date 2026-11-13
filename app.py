@@ -20,6 +20,10 @@ def main():
 
     config = get_default_config()
 
+    run_options = {
+        "is_test": True
+    }
+
     chroma_client = init_chroma_client(DB_DIR)
 
     chroma_collection = get_or_create_chroma_collection(chroma_client)
@@ -85,7 +89,7 @@ def main():
         }]
 
         # Streamlit appからの実行は .../results/tmp/ に保存する
-        save_experiment_result(evaluation_dataset, [result], metadata, config, RESULTS_TMP_DIR)
+        save_experiment_result(evaluation_dataset, [result], metadata, config, run_options)
  
         with st.chat_message("assistant"):
             st.write(result["generated_answer"])
