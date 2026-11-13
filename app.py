@@ -95,7 +95,7 @@ def main():
         with st.chat_message("assistant"):
             st.write(result["generated_answer"])
         
-        st.session_state.messages.append({"role": "assistant", "content": result})
+        st.session_state.messages.append({"role": "assistant", "content": result["generated_answer"]})
 
 
 
