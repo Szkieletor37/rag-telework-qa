@@ -709,6 +709,15 @@ wheels = [
 ]
 
 [[package]]
+name = "flatten-dict"
+version = "0.5.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0b/d0/34bf1bafa4d54e4ec20ca40856e991ffe7fdfd53831a2a36a7eb356508c8/flatten_dict-0.5.0.tar.gz", hash = "sha256:ca89664d0bc9552d525ee756726b5a755c17f65b5bf23d0a1f07841f181428b7", size = 9476, upload-time = "2026-04-28T14:23:44.979Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/72/9f/485516087cd8c44183aaf9ab850247a28e2e4a42a4d62eab77c21f673450/flatten_dict-0.5.0-py3-none-any.whl", hash = "sha256:c4bd2010052e4d33241433720d054322403fa7ad914fdc5cb1b31a713d4c561e", size = 9869, upload-time = "2026-04-28T14:23:45.695Z" },
+]
+
+[[package]]
 name = "frozenlist"
 version = "1.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2723,6 +2732,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "chromadb" },
+    { name = "flatten-dict" },
     { name = "google-genai" },
     { name = "jinja2" },
     { name = "pymupdf4llm" },
@@ -2738,6 +2748,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "chromadb", specifier = ">=1.5.9" },
+    { name = "flatten-dict", specifier = ">=0.5.0" },
     { name = "google-genai", specifier = ">=2.18.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "pymupdf4llm", specifier = ">=1.28.2" },
