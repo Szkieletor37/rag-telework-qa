@@ -74,12 +74,8 @@ def generate_index(chroma_collection: Any, win_host: Any, md_path: Path, indexin
     # 各チャンクごとに処理
     for i, chunk in enumerate(tqdm(chunks)):
 
-        logger.debug(f"--- チャンク No.{i}を処理 ---")
-
         # 埋め込みベクタ化
-        logger.debug("チャンクの埋め込みベクタ化を開始")
         embed = get_embeddings(chunk, win_host, indexing_config["embedding"]["model_name"])
-        logger.debug("完了: チャンクの埋め込みベクタ化")
 
         # collection に格納
         # TODO: ループ内では list に append して、ループ外で1回の .add() にすることもできる
