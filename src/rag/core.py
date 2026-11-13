@@ -126,14 +126,14 @@ def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any, co
     logger.debug(f"retrieved_contexts: {retrieved_contexts}")
 
     # 推論させるためのプロンプトを組み立てる
-    inference_prompt_template = config["prompt"]["system_prompt"]
+    inference_prompt_template = config["generation"]["prompt"]["system_prompt_template"]
     inference_prompt_rendered = build_inference_prompt(inference_prompt_template, query_text, retrieved_contexts)
 
     logger.debug("推論用プロンプト:")
     logger.debug(inference_prompt_rendered)
 
     # モデルに検索結果を渡し、推論させる
-    thought_process, generated_answer = generate_answer(inference_prompt_rendered, inference_model=config["inference_model"]["name"])
+    thought_process, generated_answer = generate_answer(inference_prompt_rendered, inference_model=config["generation"]["model_name"])
 
     result = {
         "rendered_prompt": inference_prompt_rendered,

@@ -60,16 +60,17 @@ def get_prompt_metadata(prompt_path: Path) -> dict:
     return {
         "template_id": prompt_path.name,
         "template_hash": prompt_hash,
-        "system_prompt": content,
+        "system_prompt_template": content,
     }
 
 
 def get_default_config() -> dict:
 
     return {
-        "inference_model": {
-            "name": INFERENCE_MODEL,
-            "temperature": INFERENCE_MODEL_TEMPERATURE,
+        "generation": {
+            "model_name": INFERENCE_MODEL,
+            #"temperature": INFERENCE_MODEL_TEMPERATURE,
+            "prompt": get_prompt_metadata(INFERENCE_PROMPT_PATH)
         },
         "chunking": {
             "strategy": "fixed_size",
@@ -82,7 +83,6 @@ def get_default_config() -> dict:
             "top_k": TOP_K,
             "embedding_model": EMBEDDING_MODEL,
         },
-        "prompt": get_prompt_metadata(INFERENCE_PROMPT_PATH)
     }
 
 
