@@ -49,12 +49,6 @@ def cli_eval() -> Any:
     logger.debug(win_host)
 
     # 1問ずつ rag_core_pipeline() に渡す
-    # TODO: 
-    #   現在、埋め込みベクトルの作成 -> 検索 -> 回答 を1問ごとにやっている
-    #       この状態だと、Ollamaとの通信（埋め込み時）、APIとの通信（回答時）に時間がかかる恐れあり
-    #   将来的には、複数の質問Ｎ問をまとめてバッチ処理的に回答させたい場合、N問すべての埋め込みベクトルを作成 -> N問すべてを検索し結果を取得 -> N問すべてに回答 とさせたほうが高速化できる
-    #
-    # とりあえず気にせず、まず動くものを実装する
 
     results = []
     for question_entry in evaluation_dataset:
