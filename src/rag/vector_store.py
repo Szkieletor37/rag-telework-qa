@@ -104,7 +104,6 @@ def init_chroma_client(db_path: Path):
 
 def get_or_create_chroma_collection(chroma_client: Any, collection_name: str):
     """ chroma_collection を作成または取得する関数 """
-    # TODO: 本当は name をハードコードするのやめるべきで、引数で与えるべき？
     chroma_collection = chroma_client.get_or_create_collection(
         name=collection_name
     )
