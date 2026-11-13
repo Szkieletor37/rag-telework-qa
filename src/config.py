@@ -64,13 +64,10 @@ def get_prompt_metadata(prompt_path: Path) -> dict:
     }
 
 
-def get_default_config() -> dict:
-
+def get_indexing_config() -> dict:
     return {
-        "generation": {
-            "model_name": INFERENCE_MODEL,
-            "temperature": INFERENCE_MODEL_TEMPERATURE,
-            "prompt": get_prompt_metadata(INFERENCE_PROMPT_PATH)
+        "embedding": {
+            "model_name": EMBEDDING_MODEL
         },
         "chunking": {
             "strategy": "fixed_size",
@@ -78,6 +75,16 @@ def get_default_config() -> dict:
                 "chunk_size": CHUNK_SIZE,
                 "chunk_overlap": CHUNK_OVERLAP,
             }
+        }
+    }
+
+def get_generation_and_retrieval_config() -> dict:
+
+    return {
+        "generation": {
+            "model_name": INFERENCE_MODEL,
+            "temperature": INFERENCE_MODEL_TEMPERATURE,
+            "prompt": get_prompt_metadata(INFERENCE_PROMPT_PATH)
         },
         "retrieval": {
             "top_k": TOP_K,

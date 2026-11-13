@@ -15,17 +15,21 @@ from src.config import DB_DIR, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
 
-def split_text(md: str):
+def split_text(md: str, indexing_config:dict):
     """チャンキングを行う関数
     """
-    chunk_size = CHUNK_SIZE
-    chunk_overlap = CHUNK_OVERLAP
-    chunks = []
-    start = 0
-    while start < len(md):
-        end = start + chunk_size
-        chunks.append(md[start:end])
-        start += chunk_size - chunk_overlap
+
+    if indexing_config["chunking"]["strategy"] == "fixed_size":
+        chunk_size = indexing_config["chunking"]["chunk_size"]
+        chunk_overlap = indexing_config["chunking"]["chunk_overlap"]
+        chunks = []
+        start = 0
+        while start < len(md):
+            end = start + chunk_size
+            chunks.append(md[start:end])
+            start += chunk_size - chunk_overlap
+    else:
+        raise ValueError("固定チャンキングにしか config が対応していないよ")
 
     return chunks
 
@@ -41,7 +45,7 @@ def get_embeddings(text: str, win_host: Any, embedding_model: Any):
     return data["embedding"]
 
 
-def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, md_path: Path, debug_chunk_len_limit=None):
+def generate_index(chroma_collection: Any, win_host: Any, md_path: Path, indexing_config:dict, debug_chunk_len_limit=None):
     """検索対象の資料のvector indexを構築して、chroma_dbへ格納する関数"""
 
     # markdown の読み込み
@@ -51,7 +55,7 @@ def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, m
 
     # チャンクに分割
     logger.debug("チャンクの分割の開始")
-    chunks = split_text(md)
+    chunks = split_text(md, indexing_config)
 
     # debug 用に、chunks (list) の長さを制限
     # 本番時は None または十分大きな値にする
@@ -74,7 +78,7 @@ def generate_index(chroma_collection: Any, win_host: Any, embedding_model:Any, m
 
         # 埋め込みベクタ化
         logger.debug("チャンクの埋め込みベクタ化を開始")
-        embed = get_embeddings(chunk, win_host, embedding_model)
+        embed = get_embeddings(chunk, win_host, indexing_config["embedding"]["model_name"])
         logger.debug("完了: チャンクの埋め込みベクタ化")
 
         # collection に格納
@@ -98,11 +102,12 @@ def init_chroma_client(db_path: Path):
     return chroma_client
 
 
-def get_or_create_chroma_collection(chroma_client: Any):
+def get_or_create_chroma_collection(chroma_client: Any, indexing_config):
     """ chroma_collection を作成または取得する関数 """
     # TODO: 本当は name をハードコードするのやめるべきで、引数で与えるべき？
+    chunking_strategy = indexing_config["chunking"]["strategy"]
     chroma_collection = chroma_client.get_or_create_collection(
-        name="local_md"
+        name=f"local_md_{chunking_strategy}"
     )
 
     return chroma_collection
@@ -114,20 +119,20 @@ def delete_chroma_collection(chroma_client: Any):
 
     return
 
-def build_index(win_host: Any, md_path: Any):
+def build_index(win_host: Any, md_path: Any, indexing_config: dict):
 
     logger.debug("chroma_client の初期化を開始")
     chroma_client = init_chroma_client(db_path=DB_DIR)
 
-    delete_chroma_collection(chroma_client)
+    #delete_chroma_collection(chroma_client)
 
-    chroma_collection = get_or_create_chroma_collection(chroma_client)
+    chroma_collection = get_or_create_chroma_collection(chroma_client, indexing_config)
 
     logger.debug(chroma_collection)
     logger.debug("完了: Collection の初期化")
 
     # インデックスの作成
     logger.debug("資料のインデックス化を開始")
-    generate_index(chroma_collection, win_host, embedding_model=EMBEDDING_MODEL, md_path=md_path)
+    generate_index(chroma_collection, win_host, md_path, indexing_config)
     logger.debug("完了: 資料のインデックス化")
 

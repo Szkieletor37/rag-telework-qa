@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any
 import yaml
 
-from src.config import setup_environment, DB_DIR, QUESTION_DIR, get_default_config, RESULTS_DIR, RESULTS_TMP_DIR
+from src.config import setup_environment, DB_DIR, QUESTION_DIR, get_generation_and_retrieval_config, RESULTS_DIR, RESULTS_TMP_DIR
 from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection
 from src.rag.core import rag_core_pipeline
@@ -32,7 +32,7 @@ def cli_eval() -> Any:
     """CLIでYAMLファイルの質問を読み込み、1問ずつRAGに処理させて回答を保存する関数"""
 
     # 実験結果に関わるパラメータ（results/.../*.json に保存するもの）
-    config = get_default_config()
+    config = get_generation_and_retrieval_config()
 
     # 実行時のみ必要な option （*.json に保存しない）
     run_options = {

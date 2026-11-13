@@ -4,7 +4,7 @@ import streamlit as st
 import chromadb
 import requests
 
-from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME, get_default_config, RESULTS_TMP_DIR
+from src.config import setup_environment, DB_DIR, CLEANED_MD_DIR, TARGET_DOCUMENT_NAME, get_generation_and_retrieval_config, RESULTS_TMP_DIR
 from src.utils import get_win_host
 from src.rag.vector_store import init_chroma_client, get_or_create_chroma_collection, delete_chroma_collection, build_index
 from src.rag.core import rag_core_pipeline
@@ -18,7 +18,7 @@ logger.setLevel(DEBUG)
 
 def main():
 
-    config = get_default_config()
+    config = get_generation_and_retrieval_config()
 
     run_options = {
         # 
