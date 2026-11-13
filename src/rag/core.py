@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 import re
 
-from src.config import EMBEDDING_MODEL, INFERENCE_MODEL, GEMINI_API_KEY, TOP_K, INFERENCE_PROMPT_PATH
+from src.config import GEMINI_API_KEY
 from src.rag.vector_store import get_embeddings
 
 from google import genai
@@ -102,7 +102,7 @@ def generate_answer(inference_prompt: str, inference_model: Any)->Any:
     return thought_process, generated_answer
 
 
-def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any)->Any:
+def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any, config: dict)->Any:
     """RAGのコアの部分を処理する関数
     """
 
@@ -113,28 +113,27 @@ def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any)->A
     # 質問クエリを埋め込みベクトル化
     logger.debug("質問クエリのベクタ化を開始")
     logger.debug(f"type : {type(query_text)}, value: {query_text}")
-    query_embedded = get_embeddings(query_text, win_host, embedding_model=EMBEDDING_MODEL)
+    query_embedded = get_embeddings(query_text, win_host, embedding_model=config["retrieval"]["embedding_model"])
     logger.debug("完了: 質問クエリのベクタ化")
 
     # 検索
     # [["chunk1...", "chunk2...", "chunk3..."]] と2重リストで返ってくるので、[0]で内側のリストを取り出す
     logger.debug("chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
-    retrieved_contexts = retrieve_chunks(chroma_collection, query_embedded, top_k=TOP_K)
-    logger.debug("完了: chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
-    logger.debug(f"TOP_K: {TOP_K}")
+    retrieved_contexts = retrieve_chunks(chroma_collection, query_embedded, top_k=config["retrieval"]["top_k"])
+    logger.debug(f"完了: chroma_db をベクトル検索して、上位 TOP_K: {config["retrieval"]["top_k"]} 件のチャンクを取得")
 
     # 順位は 1-index で確認したいので i+1 にする
     logger.debug(f"retrieved_contexts: {retrieved_contexts}")
 
     # 推論させるためのプロンプトを組み立てる
-    inference_prompt_template = INFERENCE_PROMPT_PATH.read_text(encoding="utf-8")
+    inference_prompt_template = config["prompt"]["system_prompt"]
     inference_prompt_rendered = build_inference_prompt(inference_prompt_template, query_text, retrieved_contexts)
 
     logger.debug("推論用プロンプト:")
     logger.debug(inference_prompt_rendered)
 
     # モデルに検索結果を渡し、推論させる
-    thought_process, generated_answer = generate_answer(inference_prompt_rendered, inference_model=INFERENCE_MODEL)
+    thought_process, generated_answer = generate_answer(inference_prompt_rendered, inference_model=config["inference_model"]["name"])
 
     result = {
         "rendered_prompt": inference_prompt_rendered,

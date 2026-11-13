@@ -55,17 +55,15 @@ def cli_eval() -> Any:
     logger.debug(win_host)
 
     # 1問ずつ rag_core_pipeline() に渡す
-
     results = []
     for question_entry in evaluation_dataset:
         query_text = question_entry["question"]
-        result = rag_core_pipeline(query_text, win_host, chroma_collection)
+        result = rag_core_pipeline(query_text, win_host, chroma_collection, config)
         results.append(result)
 
     metadata = generate_metadata(execution_source="cli")
 
     save_experiment_result(evaluation_dataset, results, metadata, config, run_options)
-        
 
 
     logger.debug("完了: cli_eval()のすべての処理が完了しました。")
