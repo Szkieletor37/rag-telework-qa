@@ -16,11 +16,26 @@ from src.config import DB_DIR, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
 
-def split_text(md: str, indexing_config:dict):
-    """チャンキングを行う関数
-    """
+def _split_fixed_length(text: str, indexing_config: dict):
+    pass
 
-    if indexing_config["chunking"]["strategy"] == "fixed_size":
+def _split_markdown_header(text: str, indexing_config: dict):
+    pass
+
+def split_text(text: str, indexing_config: dict):
+    """
+    設定された strategy に基づいてチャンキングを行う関数
+    """
+    strategy = indexing_config["chunking"]["strategy"]
+
+    if strategy == "fixed_size":
+        return _split_fixed_length(text, indexing_config)
+    elif strategy == "markdown-header":
+        return _split_markdown_header(text, indexing_config)
+    else:
+        raise ValueError(f"Unknown Chunking strategy: {strategy}")
+
+    if hoge == "fixed_size":
         chunk_size = indexing_config["chunking"]["params"]["chunk_size"]
         chunk_overlap = indexing_config["chunking"]["params"]["chunk_overlap"]
         chunks = []
