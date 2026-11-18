@@ -52,7 +52,7 @@ def _split_recursive_character(text: str, chunk_size: int, chunk_overlap: int):
     return text_splitter.split_text(text)
 
 
-def _split_markdown_header(text: str, chunk_size: int, chunk_overlap: int):
+def _split_markdown_header(text: str):
     """
     langchain-text-splitter の実装で、Markdown の Header に基づいて text を分割する関数
     """
@@ -88,7 +88,7 @@ def split_text(text: str, indexing_config: dict):
     elif strategy == "langchain_recursive-character":
         return _split_recursive_character(text, chunk_size, chunk_overlap)
     elif strategy == "langchain_markdown-header":
-        return _split_markdown_header(text, indexing_config)
+        return _split_markdown_header(text)
     else:
         raise ValueError(f"Unknown Chunking strategy: {strategy}")
 
