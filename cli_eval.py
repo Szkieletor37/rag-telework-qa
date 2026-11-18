@@ -58,12 +58,8 @@ def cli_eval() -> Any:
     win_host = get_win_host()
     logger.debug(win_host)
 
-    # 1問ずつ rag_core_pipeline() に渡す
-    results = []
-    for question_entry in evaluation_dataset:
-        query_text = question_entry["question"]
-        result = rag_core_pipeline(query_text, win_host, chroma_collection, config)
-        results.append(result)
+    query_texts = [question_entry["question"] for question_entry in evaluation_dataset]
+    results = rag_core_pipeline(query_texts, win_host, chroma_collection, config)
 
     metadata = generate_metadata(execution_source="cli")
 

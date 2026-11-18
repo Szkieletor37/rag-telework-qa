@@ -18,15 +18,10 @@ logger = getLogger(__name__)
 logger.setLevel(DEBUG)
 
 def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
-    """ベクトル検索を行う関数"""
+    """複数の query を一括で受け付け、ベクトル検索を行う関数"""
 
-    # TODO: 複数の query を一括で受付可能なので、一括で渡すように実装を変更する？
-    #   * そうすると全体の設計の見直しが必要かも
-    #   * そもそも不要かも
-    # TODO: 引数の型がわからん
-    #   単一の埋め込みなのかリストなのか
     retrieved_chunks = collection.query(
-        query_embeddings=[query_embeddings],
+        query_embeddings=query_embeddings,
         n_results=top_k
     )
 
@@ -35,17 +30,19 @@ def retrieve_chunks(collection: Any, query_embeddings: Any, top_k: int) -> Any:
     retrieved_contexts = []
 
     # 各要素は2重リストになっている
-    # 現在の実装だと 1 query() あたり1個のみembeddingを渡しているので range(0)
-    for i in range(1):
+    for i, _ in enumerate(retrieved_chunks["ids"]):
+        retrieved_contexts_per_query = []
 
         # rank は 1-index にする
-        for j, id in enumerate(retrieved_chunks["ids"][i]):
-            retrieved_contexts.append({
-                "chunk_id": id,
+        for j in range(top_k):
+            retrieved_contexts_per_query.append({
+                "chunk_id": retrieved_chunks["ids"][i][j],
                 "rank": j+1,
                 "score": retrieved_chunks["distances"][i][j], 
                 "text": retrieved_chunks["documents"][i][j]
             })
+
+        retrieved_contexts.append(retrieved_contexts_per_query)
 
     return retrieved_contexts
 
@@ -61,9 +58,10 @@ def build_inference_prompt(prompt_template: str, query_text: str, retrieved_cont
     template = Template(prompt_template)
 
     return template.render(
-        query_text=query_text,
-        documents_section=documents_section
-    )
+            query_text=query_text,
+            documents_section=documents_section
+            )
+
 
 def parse_llm_response(raw_response: str):
     """モデルの推論回答をXMLタグで parse する関数"""
@@ -102,43 +100,45 @@ def generate_answer(inference_prompt: str, inference_model: Any, temperature: An
     return thought_process, generated_answer
 
 
-def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any, config: dict)->Any:
+def rag_core_pipeline(query_texts: Any, win_host: Any, chroma_collection: Any, config: dict)->Any:
     """
     RAGのコアの部分を処理する関数
     """
 
     # 質問クエリを埋め込みベクトル化
     logger.debug("質問クエリのベクタ化を開始")
-    logger.debug(f"type : {type(query_text)}, value: {query_text}")
-    query_embedded = get_embeddings(query_text, win_host, embedding_model=config["retrieval"]["embedding_model"])
+    logger.debug(f"type : {type(query_texts)}, value: {query_texts}")
+    query_embeddeds = get_embeddings(query_texts, win_host, embedding_model=config["retrieval"]["embedding_model"])
     logger.debug("完了: 質問クエリのベクタ化")
+    logger.debug(f"{type(query_embeddeds)}")
 
     # 検索
-    # [["chunk1...", "chunk2...", "chunk3..."]] と2重リストで返ってくるので、[0]で内側のリストを取り出す
     logger.debug("chroma_db をベクトル検索して、上位 TOP_K 件のチャンクを取得")
-    retrieved_contexts = retrieve_chunks(chroma_collection, query_embedded, top_k=config["retrieval"]["top_k"])
+    retrieved_contexts = retrieve_chunks(chroma_collection, query_embeddeds, top_k=config["retrieval"]["top_k"])
     logger.debug(f"完了: chroma_db をベクトル検索して、上位 TOP_K: {config["retrieval"]["top_k"]} 件のチャンクを取得")
 
-    # 順位は 1-index で確認したいので i+1 にする
     logger.debug(f"retrieved_contexts: {retrieved_contexts}")
 
-    # 推論させるためのプロンプトを組み立てる
-    inference_prompt_template = config["generation"]["prompt"]["system_prompt_template"]
-    inference_prompt_rendered = build_inference_prompt(inference_prompt_template, query_text, retrieved_contexts)
+    results = []
 
-    logger.debug("推論用プロンプト:")
-    logger.debug(inference_prompt_rendered)
+    for query_text, retrieved_contexts_per_query in zip(query_texts, retrieved_contexts):
 
-    # モデルに検索結果を渡し、推論させる
-    thought_process, generated_answer = generate_answer(inference_prompt_rendered, config["generation"]["model_name"], config["generation"]["temperature"])
+        # 推論させるためのプロンプトを組み立てる
+        inference_prompt_template = config["generation"]["prompt"]["system_prompt_template"]
+        inference_prompt_rendered = build_inference_prompt(inference_prompt_template, query_text, retrieved_contexts_per_query)
 
-    result = {
-        "rendered_prompt": inference_prompt_rendered,
-        "thought_process": thought_process,
-        "generated_answer": generated_answer,
-        "retrieved_contexts": retrieved_contexts
-    }
+        logger.debug("推論用プロンプト:")
+        logger.debug(inference_prompt_rendered)
 
+        # モデルに質問文と検索結果を埋め込んだプロンプトを渡し、推論させる
+        thought_process, generated_answer = generate_answer(inference_prompt_rendered, config["generation"]["model_name"], config["generation"]["temperature"])
 
-    # Webから呼んだ場合は結果を返して出力？
-    return result
+        result = {
+            "rendered_prompt": inference_prompt_rendered,
+            "thought_process": thought_process,
+            "generated_answer": generated_answer,
+            "retrieved_contexts": retrieved_contexts_per_query
+        }
+        results.append(result)
+
+    return results
