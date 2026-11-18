@@ -41,6 +41,12 @@ GEMINI_API_KEY_FREE = os.getenv('GEMINI_API_KEY_FREE')
 # 前処理時のパラメータ
 CLEANING_MODEL = "gemini-3.6-flash"
 
+# インデックス構築時のパラメータ
+# 固定長チャンキングの際のパラメータ
+# strategy = ["custom_fixed-length", "langchain_recursive-character"] の際に使用
+CHUNK_SIZE = 200
+CHUNK_OVERLAP = 50
+
 # 推論時のパラメータ
 INFERENCE_MODEL = "gemini-3.5-flash-lite"
 INFERENCE_MODEL_TEMPERATURE = 0.1
@@ -48,10 +54,6 @@ INFERENCE_MODEL_TEMPERATURE = 0.1
 # 検索関連のパラメータ
 TOP_K = 3
 EMBEDDING_MODEL = "nomic-embed-text"
-
-# 固定チャンク長のときのチャンク関連のパラメータ
-CHUNK_SIZE = 200
-CHUNK_OVERLAP = 50
 
 def get_prompt_metadata(prompt_path: Path) -> dict:
     content = prompt_path.read_text(encoding="utf-8")
