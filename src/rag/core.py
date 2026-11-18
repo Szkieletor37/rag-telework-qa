@@ -107,10 +107,6 @@ def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any, co
     RAGのコアの部分を処理する関数
     """
 
-    # TODO: 
-    #   * DB_DIR はどのファイルで宣言すべき？
-    #   * DB_DIR は rag_core_pipeline()は引数として受け取るべき？
-
     # 質問クエリを埋め込みベクトル化
     logger.debug("質問クエリのベクタ化を開始")
     logger.debug(f"type : {type(query_text)}, value: {query_text}")
