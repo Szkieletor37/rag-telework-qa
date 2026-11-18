@@ -70,7 +70,6 @@ def _split_markdown_header(text: str):
     markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on)
 
     chunks = markdown_splitter.split_text(text)
-    logger.debug(f"_split_markdown_header: chunks: {chunks}")
 
     return chunks
 
@@ -120,6 +119,7 @@ def generate_index(chroma_collection: Any, win_host: Any, md_path: Path, indexin
     if indexing_config["debug"] == True:
         chunks = chunks[:5]
         logger.debug(f"注意: デバッグ用に、資料のチャンク数は 5 に制限しています")
+        logger.debug(f"chunks: {chunks}")
 
 
     #for i, item in enumerate(chunks):
