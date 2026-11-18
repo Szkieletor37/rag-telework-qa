@@ -68,6 +68,7 @@ def get_prompt_metadata(prompt_path: Path) -> dict:
 
 def get_indexing_config() -> dict:
     return {
+        "debug": True,
         "embedding": {
             "model_name": EMBEDDING_MODEL
         },

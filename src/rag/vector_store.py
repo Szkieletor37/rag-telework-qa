@@ -117,12 +117,9 @@ def generate_index(chroma_collection: Any, win_host: Any, md_path: Path, indexin
     logger.debug("チャンクの分割の開始")
     chunks = split_text(md, indexing_config)
 
-    # debug 用に、chunks (list) の長さを制限
-    # 本番時は None または十分大きな値にする
-    DEBUG_CHUNK_LEN_LIMIT = debug_chunk_len_limit
-    if DEBUG_CHUNK_LEN_LIMIT is not None:
-        chunks = chunks[:DEBUG_CHUNK_LEN_LIMIT]
-        logger.debug(f"注意: デバッグ用に、資料のチャンク数は{DEBUG_CHUNK_LEN_LIMIT}に制限しています")
+    if indexing_config["debug"] == True:
+        chunks = chunks[:5]
+        logger.debug(f"注意: デバッグ用に、資料のチャンク数は 5 に制限しています")
 
 
     #for i, item in enumerate(chunks):
