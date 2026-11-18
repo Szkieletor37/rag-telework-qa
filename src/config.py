@@ -70,7 +70,7 @@ def get_indexing_config() -> dict:
             "model_name": EMBEDDING_MODEL
         },
         "chunking": {
-            "strategy": "fixed_size",
+            "strategy": "langchain_markdown-header",
             "params": {
                 "chunk_size": CHUNK_SIZE,
                 "chunk_overlap": CHUNK_OVERLAP,
