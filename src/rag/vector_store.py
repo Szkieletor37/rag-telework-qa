@@ -8,6 +8,7 @@ from typing import Any
 
 import chromadb
 from flatten_dict import flatten
+from langchain_text_splitters import RecursiveCharacterTextSplitter, MarkdownHeaderTextSplitter
 import requests
 from tqdm import tqdm
 
@@ -16,38 +17,81 @@ from src.config import DB_DIR, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
 
-def _split_fixed_length(text: str, indexing_config: dict):
-    pass
+def _split_fixed_length_custom(text: str, chunk_size: int, chunk_overlap: int):
+    """
+    固定長チャンキング（自前実装）で text を分割する関数
+    """
+    chunks = []
+    start = 0
+    while start < len(text):
+        end = start + chunk_size
+        chunks.append(text[start:end])
+        start += chunk_size - chunk_overlap
+    return chunks
 
-def _split_markdown_header(text: str, indexing_config: dict):
-    pass
+def _split_recursive_character(text: str, chunk_size: int, chunk_overlap: int):
+    """
+    langchain-text-splitterの実装で、区切り文字 separators で再帰的にテキスト分割を行う関数
+    """
+
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap,
+        separators=[
+            "\n\n", # 段落区切り
+            "\n",   # 改行
+            "。",   # 句点
+            "！",   # 感嘆符
+            "？",   # 疑問符
+            "、",   # 読点
+            " ",    # 空白
+            "",     # 文字単位（優先順位最低）
+        ]
+    )
+
+    return text_splitter.split_text(text)
+
+
+def _split_markdown_header(text: str, chunk_size: int, chunk_overlap: int):
+    """
+    langchain-text-splitter の実装で、Markdown の Header に基づいて text を分割する関数
+    """
+
+    # ターゲットとする telework_guide.md の見出しは最大5レベルまで
+    # "#", Header 1 は文書全体のタイトルであり、今回は単一文書のみ扱うため除外
+    #   複数文書を扱う際は Header 1 も含めたほうがよい
+    headers_to_split_on = [
+        ("##", "Header 2"),
+        ("###", "Header 3"),
+        ("####", "Header 4"),
+        ("#####", "Header 5"),
+    ]
+
+    markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on)
+
+    chunks = markdown_splitter.split_text(text)
+    logger.debug(f"_split_markdown_header: chunks: {chunks}")
+
+    return chunks
+
 
 def split_text(text: str, indexing_config: dict):
     """
     設定された strategy に基づいてチャンキングを行う関数
     """
     strategy = indexing_config["chunking"]["strategy"]
+    chunk_size = indexing_config["chunking"]["params"]["chunk_size"]
+    chunk_overlap = indexing_config["chunking"]["params"]["chunk_overlap"]
 
-    if strategy == "fixed_size":
-        return _split_fixed_length(text, indexing_config)
-    elif strategy == "markdown-header":
+    if strategy == "custom_fixed-length":
+        return _split_fixed_length_custom(text, chunk_size, chunk_overlap)
+    elif strategy == "langchain_recursive-character":
+        return _split_recursive_character(text, chunk_size, chunk_overlap)
+    elif strategy == "langchain_markdown-header":
         return _split_markdown_header(text, indexing_config)
     else:
         raise ValueError(f"Unknown Chunking strategy: {strategy}")
 
-    if hoge == "fixed_size":
-        chunk_size = indexing_config["chunking"]["params"]["chunk_size"]
-        chunk_overlap = indexing_config["chunking"]["params"]["chunk_overlap"]
-        chunks = []
-        start = 0
-        while start < len(md):
-            end = start + chunk_size
-            chunks.append(md[start:end])
-            start += chunk_size - chunk_overlap
-    else:
-        raise ValueError("固定チャンキングにしか config が対応していないよ")
-
-    return chunks
 
 def get_embeddings(text: str, win_host: Any, embedding_model: Any):
     """短いテキストについての埋め込みベクトルを生成・取得する関数"""
