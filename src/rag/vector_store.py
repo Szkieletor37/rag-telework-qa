@@ -190,7 +190,8 @@ def build_index(win_host: Any, md_path: Any, indexing_config: dict):
 
     collection_name = f"local_md_{indexing_config["chunking"]["strategy"]}"
 
-    delete_chroma_collection(chroma_client, collection_name)
+    if collection_name in chroma_client.list_collections():
+        delete_chroma_collection(chroma_client, collection_name)
 
     # 参照時のために metadata を付加
     # nested dict を受け付けないので flatten する
