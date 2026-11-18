@@ -103,7 +103,8 @@ def generate_answer(inference_prompt: str, inference_model: Any, temperature: An
 
 
 def rag_core_pipeline(query_text: Any, win_host: Any, chroma_collection: Any, config: dict)->Any:
-    """RAGのコアの部分を処理する関数
+    """
+    RAGのコアの部分を処理する関数
     """
 
     # TODO: 
