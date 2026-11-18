@@ -71,8 +71,35 @@ def _split_markdown_header(text: str) -> tuple[list[str], list[str]]:
     # 返り値は LangChain.Document
     md_header_splits = markdown_splitter.split_text(text)
 
-    metadatas = [doc.metadata for doc in md_header_splits]
-    chunks = [doc.page_content for doc in md_header_splits]
+    # chunk size を制限する
+    recursive_character_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=2048,
+        chunk_overlap=50,
+        separators=[
+            "\n\n", # 段落区切り
+            "\n",   # 改行
+            "。",   # 句点
+            "！",   # 感嘆符
+            "？",   # 疑問符
+            "、",   # 読点
+            " ",    # 空白
+            "",     # 文字単位（優先順位最低）
+        ]
+    )
+
+    splits = recursive_character_splitter.split_documents(md_header_splits)
+
+    metadatas = [
+        # 空にならないようデフォルト値与える
+        doc.metadata if doc.metadata else {"Header 1": "テレワークの適切な導入及び実施の推進のためのガイドライン"}
+        for doc in splits
+    ]
+    chunks = [doc.page_content for doc in splits]
+
+    for i, metadata in enumerate(metadatas):
+        if metadata == {}:
+            logger.error(f"error, {i}, {chunks[i]}")
+            return
 
     return chunks, metadatas
 
