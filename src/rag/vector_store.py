@@ -17,7 +17,7 @@ from src.config import DB_DIR, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
 
-def _split_fixed_length_custom(text: str, chunk_size: int, chunk_overlap: int):
+def _split_fixed_length_custom(text: str, chunk_size: int, chunk_overlap: int) -> tuple[list[str], list[str]]:
     """
     固定長チャンキング（自前実装）で text を分割する関数
     """
@@ -27,9 +27,9 @@ def _split_fixed_length_custom(text: str, chunk_size: int, chunk_overlap: int):
         end = start + chunk_size
         chunks.append(text[start:end])
         start += chunk_size - chunk_overlap
-    return chunks
+    return chunks, []
 
-def _split_recursive_character(text: str, chunk_size: int, chunk_overlap: int):
+def _split_recursive_character(text: str, chunk_size: int, chunk_overlap: int) -> tuple[list[str], list[str]]:
     """
     langchain-text-splitterの実装で、区切り文字 separators で再帰的にテキスト分割を行う関数
     """
@@ -49,10 +49,9 @@ def _split_recursive_character(text: str, chunk_size: int, chunk_overlap: int):
         ]
     )
 
-    return text_splitter.split_text(text)
+    return text_splitter.split_text(text), []
 
-
-def _split_markdown_header(text: str):
+def _split_markdown_header(text: str) -> tuple[list[str], list[str]]:
     """
     langchain-text-splitter の実装で、Markdown の Header に基づいて text を分割する関数
     """
@@ -69,12 +68,16 @@ def _split_markdown_header(text: str):
 
     markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on)
 
-    chunks = markdown_splitter.split_text(text)
+    # 返り値は LangChain.Document
+    md_header_splits = markdown_splitter.split_text(text)
 
-    return chunks
+    metadatas = [doc.metadata for doc in md_header_splits]
+    chunks = [doc.page_content for doc in md_header_splits]
+
+    return chunks, metadatas
 
 
-def split_text(text: str, indexing_config: dict):
+def split_text(text: str, indexing_config: dict) -> tuple[list[str], list[str]]:
     """
     設定された strategy に基づいてチャンキングを行う関数
     """
@@ -92,16 +95,21 @@ def split_text(text: str, indexing_config: dict):
         raise ValueError(f"Unknown Chunking strategy: {strategy}")
 
 
-def get_embeddings(text: str, win_host: Any, embedding_model: Any):
+def get_embeddings(texts: list[str], win_host: Any, embedding_model: Any) -> list[float]:
     """短いテキストについての埋め込みベクトルを生成・取得する関数"""
 
-    r = requests.post(
-        f"http://{win_host}:12000/api/embeddings",
-        json={"model": embedding_model, "prompt": text}
-    )
-    data = r.json()
+    embeddings = []
 
-    return data["embedding"]
+    for text in tqdm(texts):
+        r = requests.post(
+            f"http://{win_host}:12000/api/embeddings",
+            json={"model": embedding_model, "prompt": text}
+        )
+        data = r.json()
+        logger.debug(f"{data=}")
+        embeddings.append(data["embedding"])
+
+    return embeddings
 
 
 def generate_index(chroma_collection: Any, win_host: Any, md_path: Path, indexing_config: dict):
@@ -114,33 +122,26 @@ def generate_index(chroma_collection: Any, win_host: Any, md_path: Path, indexin
 
     # チャンクに分割
     logger.debug("チャンクの分割の開始")
-    chunks = split_text(md, indexing_config)
+    chunks, metadatas = split_text(md, indexing_config)
 
-    if indexing_config["debug"] == True:
-        chunks = chunks[:5]
-        logger.debug(f"注意: デバッグ用に、資料のチャンク数は 5 に制限しています")
-        logger.debug(f"chunks: {chunks}")
-
-
-    #for i, item in enumerate(chunks):
-            #logger.debug(f"--- チャンク No.{i} ---")
-            #logger.debug(item)
     logger.debug("完了: チャンクの分割")
     logger.debug(f"\t チャンク数: {len(chunks)}")
 
-    # 各チャンクごとに処理
-    for i, chunk in enumerate(tqdm(chunks)):
+    if indexing_config["debug"] == True:
+        logger.debug(f"注意: デバッグ用に、資料のチャンク数は 5 に制限しています")
+        s = slice(50, 55)
+        chunks = chunks[s]
+        metadatas = metadatas[s]
 
-        # 埋め込みベクタ化
-        embed = get_embeddings(chunk, win_host, indexing_config["embedding"]["model_name"])
+    embeddings = get_embeddings(chunks, win_host, indexing_config["embedding"]["model_name"])
+    ids = [f"telework_guide_{i}" for i in range(len(chunks))]
 
-        # collection に格納
-        # TODO: ループ内では list に append して、ループ外で1回の .add() にすることもできる
-        chroma_collection.add(
-            documents=[chunk],
-            embeddings=[embed],
-            ids=[f"telework_guide_{i}"]
-        )
+    chroma_collection.add(
+        documents=chunks,
+        embeddings=embeddings,
+        ids=ids,
+        metadatas=metadatas
+    )
 
     logger.debug("完了: 全てのチャンクをべクタ化して Collection に格納")
     
