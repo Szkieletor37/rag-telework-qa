@@ -129,14 +129,14 @@ def get_embeddings(texts: list[str], win_host: Any, embedding_model: Any) -> lis
 
     for text in tqdm(texts):
         r = requests.post(
-            f"http://{win_host}:12000/api/embeddings",
-            json={"model": embedding_model, "prompt": text}
+            f"http://{win_host}:12000/api/embed",
+            json={"model": embedding_model, "input": text}
         )
         data = r.json()
-        embedding = data["embedding"]
+
+        embedding = data["embeddings"][0]
 
         _check_l2_normalized(embedding)
-
 
         embeddings.append(embedding)
 
