@@ -12,14 +12,14 @@ def get_win_host():
     route_output = subprocess.getoutput("ip route show | grep default | awk '{print $3}'").strip()
     return route_output
 
-def _check_l2_normalized(vec: Any, atol: float = 1e-5) -> dict:
+def _check_l2_normalized(vec: list[float], atol: float = 1e-5) -> dict:
     """
     埋め込みベクトルへの変換の仕様を検証・理解するための関数（処理上は不要）
     """
     # vec を Numpy 配列に変換
     v = np.asarray(vec, dtype=np.float64).ravel()
 
-    l2_norm = float(np.linalg.norm(v, ord=2))
+    l2_norm = float(np.linalg.norm(v, axis=-1))
 
     is_normalized = bool(np.isclose(l2_norm, 1.0, atol=atol, rtol=0.0))
 
@@ -28,6 +28,7 @@ def _check_l2_normalized(vec: Any, atol: float = 1e-5) -> dict:
         "l2_norm": l2_norm,
         "is_normalized": is_normalized,
     }
+    logger.debug(f"埋め込みベクトルの中身: {vec[:5]=}")
     logger.debug(f"{result=}")
 
 
