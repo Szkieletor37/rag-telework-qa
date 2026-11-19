@@ -222,8 +222,11 @@ def build_index(win_host: Any, md_path: Any, indexing_config: dict):
 
     collection_name = f"local_md_{indexing_config["chunking"]["strategy"]}"
 
-    if collection_name in chroma_client.list_collections():
+    logger.debug(f"{chroma_client.list_collections()=}")
+
+    if collection_name in [c.name for c in chroma_client.list_collections()]:
         delete_chroma_collection(chroma_client, collection_name)
+        logger.debug(f"注意: 既存のCollection {collection_name}は削除されました")
 
     # 参照時のために metadata を付加
     # nested dict を受け付けないので flatten する
@@ -231,7 +234,7 @@ def build_index(win_host: Any, md_path: Any, indexing_config: dict):
     chroma_collection = create_chroma_collection(chroma_client, collection_name, metadata)
 
     logger.debug(chroma_collection)
-    logger.debug("完了: Collection の初期化")
+    logger.debug(f"完了: Collection は新たに作成されました: {collection_name}")
 
     # インデックスの作成
     logger.debug("資料のインデックス化を開始")
