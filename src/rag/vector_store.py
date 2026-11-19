@@ -13,6 +13,7 @@ import requests
 from tqdm import tqdm
 
 from src.config import DB_DIR, EMBEDDING_MODEL, CHUNK_SIZE, CHUNK_OVERLAP
+from src.utils import _check_l2_normalized
 
 logger = getLogger(__name__)
 logger.setLevel(DEBUG)
@@ -121,7 +122,6 @@ def split_text(text: str, indexing_config: dict) -> tuple[list[str], list[str]]:
     else:
         raise ValueError(f"Unknown Chunking strategy: {strategy}")
 
-
 def get_embeddings(texts: list[str], win_host: Any, embedding_model: Any) -> list[float]:
     """短いテキストについての埋め込みベクトルを生成・取得する関数"""
 
@@ -133,8 +133,12 @@ def get_embeddings(texts: list[str], win_host: Any, embedding_model: Any) -> lis
             json={"model": embedding_model, "prompt": text}
         )
         data = r.json()
-        logger.debug(f"{data=}")
-        embeddings.append(data["embedding"])
+        embedding = data["embedding"]
+
+        _check_l2_normalized(embedding)
+
+
+        embeddings.append(embedding)
 
     return embeddings
 
